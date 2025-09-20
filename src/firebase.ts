@@ -33,6 +33,11 @@ function ensureApp() {
   }
 
   if (projectId && clientEmail && privateKey) {
+    // Skip Firebase initialization in dev mode if credentials are placeholders
+    if (process.env.DEV_BYPASS_AUTH === '1' && privateKey.includes('your_private_key')) {
+      console.log('[firebase-admin] Skipping Firebase initialization in dev mode with placeholder credentials');
+      return;
+    }
     try {
       admin.initializeApp({
         credential: admin.credential.cert({ projectId, clientEmail, privateKey }),

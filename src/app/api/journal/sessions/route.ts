@@ -23,6 +23,13 @@ export async function POST(request: NextRequest) {
       completedAt: completedAt ? new Date(completedAt) : null,
       updatedAt: new Date(),
     };
+
+    // Skip saving to Firestore in dev mode if Firebase isn't initialized
+    if (process.env.DEV_BYPASS_AUTH === '1') {
+      console.log('Dev mode: Skipping Firestore save, session data:', sessionData);
+      return NextResponse.json({ success: true, sessionId: id, devMode: true });
+    }
+
     await getDb().collection('reflection_sessions').doc(id).set(sessionData);
     return NextResponse.json({ success: true, sessionId: id });
   } catch (error: any) {

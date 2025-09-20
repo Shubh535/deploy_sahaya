@@ -123,9 +123,11 @@ export default function ReflectionSession({ type, onComplete, onBack }: Reflecti
         completedAt: new Date().toISOString()
       };
 
-      // Endpoint disabled on this deployment to reduce serverless functions.
-      // Persisting sessions can be re-enabled by adding a single consolidated
-      // journal endpoint on higher plans.
+      // Save the session
+      await apiRequest('/journal/sessions', {
+        method: 'POST',
+        body: JSON.stringify(sessionData)
+      });
 
       onComplete(sessionData);
     } catch (error) {
