@@ -95,7 +95,7 @@ export default function DhwaniPage() {
     setLoading(true);
     try {
       console.log('Fetching AI-powered recommendations...');
-      const data = await apiRequest('/unified?action=soundscape-recommend', {
+      const data = await apiRequest('/soundscape/recommend', {
         method: 'POST',
         body: JSON.stringify({}),
       });
