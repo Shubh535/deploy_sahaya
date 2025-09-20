@@ -3,26 +3,26 @@ const API_KEY = process.env.GEMINI_API_KEY; // Get from Google AI Studio
 
 // Google Cloud DLP setup (for data anonymization)
 // Configure credentials for serverless environments like Vercel.
-const { DlpServiceClient } = require('@google-cloud/dlp');
+import { DlpServiceClient } from '@google-cloud/dlp';
 const gcpProject = process.env.GOOGLE_CLOUD_PROJECT || process.env.FIREBASE_PROJECT_ID;
 
-let dlp: any;
+let dlp: DlpServiceClient | null = null;
 try {
   // Support both GOOGLE_APPLICATION_CREDENTIALS (path) and GOOGLE_APPLICATION_CREDENTIALS_JSON (inline JSON)
   const inlineCreds = process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON;
-  const clientOptions: any = {};
+  const clientOptions: Record<string, any> = {};
   if (inlineCreds) {
     clientOptions.credentials = JSON.parse(inlineCreds);
     clientOptions.projectId = gcpProject;
   }
-  dlp = new DlpServiceClient(clientOptions);
+  dlp = new DlpServiceClient(clientOptions as any);
 } catch (e) {
   console.warn('DLP client init failed or missing credentials. DLP features may be limited.', e);
 }
 
 export async function anonymizeText(text: string): Promise<string> {
   try {
-    if (!dlp) return text;
+  if (!dlp) return text;
     const project = gcpProject || 'dummy-project';
     const request = {
       parent: dlp.projectPath(project),
@@ -45,8 +45,9 @@ export async function anonymizeText(text: string): Promise<string> {
         ],
       },
     };
-    const [response] = await dlp.deidentifyContent(request);
-    return response.item.value;
+  const [response] = await dlp.deidentifyContent(request as any);
+  const value = (response as any)?.item?.value as string | undefined;
+  return value ?? text;
   } catch (error) {
     console.error('DLP anonymization error:', error);
     return text; // Return original text if anonymization fails
