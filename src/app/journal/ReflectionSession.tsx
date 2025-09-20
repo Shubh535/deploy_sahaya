@@ -108,7 +108,7 @@ export default function ReflectionSession({ type, onComplete, onBack }: Reflecti
         })
       });
 
-      // Save the session
+      // Save the session (client-side only in Hobby deployment)
       const sessionData = {
         id: `session_${Date.now()}`,
         type,
@@ -123,10 +123,9 @@ export default function ReflectionSession({ type, onComplete, onBack }: Reflecti
         completedAt: new Date().toISOString()
       };
 
-      await apiRequest('/journal/sessions', {
-        method: 'POST',
-        body: JSON.stringify(sessionData)
-      });
+      // Endpoint disabled on this deployment to reduce serverless functions.
+      // Persisting sessions can be re-enabled by adding a single consolidated
+      // journal endpoint on higher plans.
 
       onComplete(sessionData);
     } catch (error) {
