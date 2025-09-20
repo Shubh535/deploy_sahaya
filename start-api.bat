@@ -1,3 +1,3 @@
 @echo off
-cd /d d:\websahaya\api
+cd /d d:\websahaya\api_express
 node index.js

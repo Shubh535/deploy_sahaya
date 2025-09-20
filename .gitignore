@@ -34,8 +34,8 @@ yarn-error.log*
 .env*
 
 # API keys and sensitive files
-api/serviceAccountKey.json
-api/vertexServiceAccount.json
+api_express/serviceAccountKey.json
+api_express/vertexServiceAccount.json
 src/serviceAccountKey.json
 
 # vercel
