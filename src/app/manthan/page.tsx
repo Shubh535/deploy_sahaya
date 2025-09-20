@@ -130,7 +130,7 @@ export default function ManthanJournalPage() {
     setError("");
     try {
       const token = await getIdToken();
-      const res = await fetch(`${API_BASE}/api/journal/analyze`, {
+      const res = await fetch(`${API_BASE}/api/journal/save`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ content: entry, encrypted: true }),

@@ -77,13 +77,13 @@ export default function PracticeSpacePage() {
     setAiResponse(null);
     setFeedback(null);
     try {
-      // Endpoint disabled on this deployment; simulate a helpful AI response locally
-      const scenario = SCENARIOS.find(s => s.key === selected);
-      const ai = `Thanks for sharing. ${scenario ? scenario.description : 'Here\'s a mindful way to approach this.'} Consider acknowledging your feelings, stating your needs clearly, and proposing a small next step. For example: “I value our time, and I also need some rest this weekend. Let\'s plan something for next week.”`;
-      const fb = "Great effort! You used clear language and respected both your needs and the relationship. Try adding a positive affirmation and a concrete next step.";
-      setAiResponse(ai);
-      setFeedback(fb);
-      setHistory(h => [...h, { user: userInput, ai, fb }]);
+      const res = await apiRequest('/unified?action=practice-simulate', {
+        method: 'POST',
+        body: JSON.stringify({ scenario: selected, userInput, history: history.map(h => ({ user: h.user, ai: h.ai })) }),
+      });
+      setAiResponse(res.ai);
+      setFeedback(res.feedback);
+      setHistory(h => [...h, { user: userInput, ai: res.ai, fb: res.feedback }]);
       // Plant a tree for growth/learning
       const color = '#fcd34d'; // soft yellow for growth
       const x = Math.random();
