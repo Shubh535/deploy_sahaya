@@ -115,14 +115,8 @@ export default function ManthanJournalPage() {
       if (!res.ok) throw new Error(data.error || "Analysis failed");
       setReframe(data.reframing);
       setSentiment(data.sentiment);
-      // Generate art with Imagen 2
-      const artRes = await fetch(`${API_BASE}/api/imagen/generate`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ prompt: `Abstract, glowing, minimalist art representing the mood: ${data.sentiment}. ${entry}` }),
-      });
-      const artData = await artRes.json();
-      if (artRes.ok && artData.imageBase64) setArt(artData.imageBase64);
+      // Image generation temporarily disabled on this deployment to fit Hobby plan limits
+      // setArt(null);
     } catch (e) {
       const errorMessage = e instanceof Error ? e.message : 'An unexpected error occurred';
       setError(errorMessage);
@@ -136,10 +130,10 @@ export default function ManthanJournalPage() {
     setError("");
     try {
       const token = await getIdToken();
-      const res = await fetch(`${API_BASE}/api/journal/save`, {
+      const res = await fetch(`${API_BASE}/api/journal/analyze`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ userId: user?.uid, content: entry, encrypted: true }),
+        body: JSON.stringify({ content: entry, encrypted: true }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Save failed");

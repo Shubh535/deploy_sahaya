@@ -16,15 +16,13 @@ export default function ImagenPage() {
     setError('');
     setImageUrl('');
     try {
-      const res = await apiRequest('/imagen/generate', {
-        method: 'POST',
-        body: JSON.stringify({ prompt }),
-      });
-      setImageUrl(res.imageUrl);
+      // Endpoint disabled on Hobby plan to reduce function count
+      throw new Error('Image generation is temporarily unavailable on this deployment.');
     } catch (err: any) {
       setError(err.message || 'Error generating image');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -33,7 +31,7 @@ export default function ImagenPage() {
         <div className="w-full max-w-lg glass-card flex flex-col items-center gap-2">
           <span className="text-5xl mb-2">🖼️</span>
           <h1 className="text-3xl font-extrabold mb-1 text-indigo-700 drop-shadow">Imagen 2 (AI Art)</h1>
-          <p className="mb-2 text-center text-indigo-900 font-medium">Generate images from text prompts using AI (currently unavailable).</p>
+          <p className="mb-2 text-center text-indigo-900 font-medium">Generate images from text prompts using AI (temporarily unavailable on this deployment).</p>
           <form onSubmit={handleGenerate} className="w-full flex flex-col gap-2 mt-4">
             <input
               className="input input-bordered"
