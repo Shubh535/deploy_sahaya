@@ -1,0 +1,6 @@
+# Ignore legacy Express API so Vercel doesn't create extra functions
+api/**
+# Also ignore any tests or scripts not needed for deployment
+*.test.*
+test-*.js
+start-api.bat
