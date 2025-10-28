@@ -1,5 +1,6 @@
-// Free Gemini API setup (no billing required)
+// Paid Gemini API setup (using Generative Language API with key)
 const API_KEY = process.env.GEMINI_API_KEY; // Get from Google AI Studio
+console.log('API_KEY loaded:', !!API_KEY);
 
 // Google Cloud DLP setup (for data anonymization)
 const { DlpServiceClient } = require('@google-cloud/dlp');
@@ -42,7 +43,7 @@ async function analyzeJournalEntry({ entry, language = 'en' }) {
   
   try {
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -73,6 +74,13 @@ async function analyzeJournalEntry({ entry, language = 'en' }) {
 }
 
 async function chatWithGemini({ message, mode = 'listener', language = 'en', history = [], userId }) {
+  console.log('chatWithGemini called with message:', message.substring(0, 50));
+
+  // Detect emotional tone - temporarily disabled for debugging
+  // const emotionAnalysis = await emotionalReasoning({ text: message, language });
+  const emotionAnalysis = 'emotional analysis disabled for debugging';
+  console.log('Emotion analysis:', emotionAnalysis);
+
   // System prompt for mode and language
   let systemPrompt = '';
   if (mode === 'coach') {
@@ -88,24 +96,46 @@ async function chatWithGemini({ message, mode = 'listener', language = 'en', his
     systemPrompt += ' Respond in English.';
   }
 
+  // Incorporate emotion analysis
+  systemPrompt += ` User's emotional state: ${emotionAnalysis}. Adjust your response accordingly to be more empathetic.`;
+
   // Build conversation history
   const historyText = history.map(msg => `${msg.role}: ${msg.text}`).join('\n');
   const fullPrompt = `${systemPrompt}\n\nConversation History:\n${historyText}\n\nUser: ${message}\n\nMitra:`;
 
+  // For testing, simplify prompt
+  const simplePrompt = `${systemPrompt} User: ${message}`;
+
   try {
+    console.log('Making Gemini API call...');
+    console.log('API_KEY present:', !!API_KEY);
+    console.log('API_KEY length:', API_KEY ? API_KEY.length : 0);
+    
+    const requestBody = {
+      contents: [{ parts: [{ text: simplePrompt }] }],
+    };
+    console.log('Request body:', JSON.stringify(requestBody, null, 2));
+    
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: fullPrompt }] }],
-        }),
+        body: JSON.stringify(requestBody),
       }
     );
+    console.log('Gemini API response status:', response.status);
+    console.log('Gemini API response headers:', Object.fromEntries(response.headers.entries()));
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.log('Gemini API error response:', errorText);
+      throw new Error(`API error: ${response.status} ${errorText}`);
+    }
     const data = await response.json();
+    console.log('Gemini API success response:', JSON.stringify(data, null, 2));
     const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || 'AI chat failed. Please try again later.';
-    return { text, language, mode };
+    return { text, language, mode, emotionAnalysis };
   } catch (error) {
     console.error('Gemini API chat error:', error);
     return { text: 'AI chat failed. Please try again later.', error: error.message, language, mode };
@@ -118,7 +148,7 @@ async function analyzeMoodAI({ journal, health, mood }) {
   
   try {
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -148,4 +178,27 @@ async function analyzeMoodAI({ journal, health, mood }) {
   }
 }
 
-module.exports = { anonymizeText, analyzeMoodAI, chatWithGemini, analyzeJournalEntry };
+// Emotional reasoning using Gemini (since Gemma not available yet)
+async function emotionalReasoning({ text, language = 'en' }) {
+  const prompt = `Analyze the emotional tone and provide empathetic reasoning for the following text. If language is 'hi', respond in Hindi. Text: ${text}`;
+  
+  try {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+        }),
+      }
+    );
+    const data = await response.json();
+    return data?.candidates?.[0]?.content?.parts?.[0]?.text || 'Emotional analysis failed.';
+  } catch (error) {
+    console.error('Gemini emotional reasoning error:', error);
+    return 'Emotional analysis failed.';
+  }
+}
+
+module.exports = { anonymizeText, analyzeMoodAI, chatWithGemini, analyzeJournalEntry, emotionalReasoning };

@@ -1,12 +1,21 @@
 // Test Gemini API directly
+const { config } = require('dotenv');
+config({ path: '.env.local' });
+
 async function testGeminiAPI() {
-  const API_KEY = 'AIzaSyBkTjnnBCNgXV0Oy7ahKsfwDYsijKQEwwU';
+  const API_KEY = process.env.GEMINI_API_KEY; // Set via .env or shell; do not hardcode secrets
+
+  console.log('API_KEY loaded:', API_KEY ? 'yes' : 'no');
+  if (!API_KEY) {
+    console.log('No API_KEY found. Check .env.local');
+    return;
+  }
 
   try {
     console.log('Testing Gemini API directly...');
 
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

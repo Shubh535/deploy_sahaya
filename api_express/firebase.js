@@ -7,7 +7,7 @@ const serviceAccount = require('./serviceAccountKey.json');
 if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-  databaseURL: 'https://websahaya-3900d.firebaseio.com',
+    databaseURL: 'https://websahaya-3900d.firebaseio.com',
   });
 }
 

@@ -6,10 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "api:dev": "node api_express/index.js"
   },
   "dependencies": {
     "@google-cloud/dlp": "^6.4.0",
+    "@google-cloud/vertexai": "^1.10.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",

@@ -129,6 +129,21 @@ Based on this data, provide a JSON response with:
 
     const analysisText = await generateGeminiResponse(prompt, { temperature: 0.3, maxTokens: 600 });
 
+    // Check if the response contains an error
+    if (analysisText.error) {
+      console.error('AI analysis error:', analysisText.message);
+      return {
+        moodState: 'neutral',
+        confidence: 0.5,
+        keyThemes: ['general_wellness'],
+        soundNeeds: ['relaxation'],
+        timeOfDay: 'anytime',
+        intensity: 'medium',
+        duration: 20,
+        summary: 'Analysis temporarily unavailable. Using general recommendations.'
+      };
+    }
+
     // Parse the AI response
     let analysis;
     try {

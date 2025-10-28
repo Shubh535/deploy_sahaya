@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
         const prompt = `Generate 5 concise, compassionate reflection prompts for a journaling session of type "${type}".
 Return ONLY a JSON array of strings, no extra text.`;
         const res = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`,
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -26,9 +26,16 @@ Return ONLY a JSON array of strings, no extra text.`;
         const data = await res.json();
         const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
         let prompts: string[] = [];
-        try { prompts = JSON.parse(text); } catch {}
+        // Clean potential markdown code fences before parsing
+        let cleanText = text.trim();
+        if (cleanText.startsWith('```json')) {
+          cleanText = cleanText.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+        } else if (cleanText.startsWith('```')) {
+          cleanText = cleanText.replace(/^```\s*/, '').replace(/\s*```$/, '');
+        }
+        try { prompts = JSON.parse(cleanText); } catch {}
         if (Array.isArray(prompts) && prompts.length) {
-          return NextResponse.json({ prompts });
+          return NextResponse.json({ prompts }, { headers: { 'x-ai-source': 'gemini' } });
         }
       } catch (e) {
         console.warn('Gemini reflection-prompts failed, using fallback.', e);
@@ -74,7 +81,7 @@ Return ONLY a JSON array of strings, no extra text.`;
       ],
     };
     const prompts = fallback[type] || fallback.daily;
-    return NextResponse.json({ prompts });
+    return NextResponse.json({ prompts }, { headers: { 'x-ai-source': 'fallback' } });
   } catch (error) {
     console.error('reflection-prompts error:', error);
     return NextResponse.json({ error: 'Failed to generate prompts' }, { status: 500 });

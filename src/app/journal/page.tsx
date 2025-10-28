@@ -4,6 +4,8 @@ import { useAuth } from "../components/AuthProvider";
 import RequireAuth from "../components/RequireAuth";
 import ReflectionSession from "./ReflectionSession";
 import ReflectionInsights from "./ReflectionInsights";
+import JournalDashboard from "./JournalDashboard";
+import MoodTracker from "./MoodTracker";
 
 const REFLECTION_TYPES = [
   {
@@ -43,7 +45,7 @@ const REFLECTION_TYPES = [
   }
 ];
 
-type JournalPhase = 'selection' | 'reflection' | 'insights';
+type JournalPhase = 'selection' | 'reflection' | 'insights' | 'dashboard' | 'mood';
 
 export default function JournalPage() {
   const { user } = useAuth();
@@ -128,26 +130,53 @@ export default function JournalPage() {
 
         <div className="max-w-6xl mx-auto px-4 pb-8">
           {phase === 'selection' && (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              {REFLECTION_TYPES.map((type) => (
-                <button
-                  key={type.key}
-                  onClick={() => handleTypeSelect(type.key)}
-                  className="group relative overflow-hidden bg-white dark:bg-slate-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-slate-200 dark:border-slate-700"
-                >
-                  <div className={`absolute inset-0 bg-gradient-to-r ${type.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
-                  <div className="p-6 text-center">
-                    <div className="text-4xl mb-3">{type.icon}</div>
-                    <h3 className="text-xl font-medium text-slate-800 dark:text-slate-200 mb-2">
-                      {type.label}
-                    </h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                      {type.description}
-                    </p>
-                  </div>
-                </button>
-              ))}
+            <div>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                {REFLECTION_TYPES.map((type) => (
+                  <button
+                    key={type.key}
+                    onClick={() => handleTypeSelect(type.key)}
+                    className="group relative overflow-hidden bg-white dark:bg-slate-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-slate-200 dark:border-slate-700"
+                  >
+                    <div className={`absolute inset-0 bg-gradient-to-r ${type.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
+                    <div className="p-6 text-center">
+                      <div className="text-4xl mb-3">{type.icon}</div>
+                      <h3 className="text-xl font-medium text-slate-800 dark:text-slate-200 mb-2">
+                        {type.label}
+                      </h3>
+                      <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                        {type.description}
+                      </p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              <div className="text-center mt-8">
+                <div className="flex gap-4 justify-center">
+                  <button
+                    onClick={() => setPhase('mood')}
+                    className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition-colors"
+                  >
+                    😊 Track Mood
+                  </button>
+                  <button
+                    onClick={() => setPhase('dashboard')}
+                    className="bg-slate-600 hover:bg-slate-700 text-white px-6 py-3 rounded-lg transition-colors"
+                  >
+                    📊 View My Dashboard
+                  </button>
+                </div>
+              </div>
             </div>
+          )}
+
+          {phase === 'dashboard' && (
+            <JournalDashboard onBack={() => setPhase('selection')} />
+          )}
+
+          {phase === 'mood' && (
+            <MoodTracker onBack={() => setPhase('selection')} />
           )}
 
           {phase === 'reflection' && selectedType && (

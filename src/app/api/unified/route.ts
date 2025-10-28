@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
             const historyText = history.map((h: any) => `User: ${h.user}\nAI: ${h.ai}`).join('\n');
             const prompt = `${system}\nScenario: ${scenario}\nHistory:\n${historyText}\nUser: ${userInput}\nAI:`;
             const res = await fetch(
-              `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`,
+              `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
               { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) }
             );
             const data = await res.json();

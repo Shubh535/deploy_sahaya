@@ -1,4 +1,3 @@
-
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
 import { plantTree } from '../sanjha-grove/useGarden';
@@ -38,6 +37,9 @@ export default function DhwaniPage() {
     size: string;
     color: string;
   }>>([]);
+  const [meditationTheme, setMeditationTheme] = useState('');
+  const [meditationScript, setMeditationScript] = useState('');
+  const [generating, setGenerating] = useState(false);
 
   // Alternative working URLs (uncomment to use different sounds):
   // rain: 'https://www.soundjay.com/button/beep-07a.mp3', // Alternative sample
@@ -146,6 +148,27 @@ export default function DhwaniPage() {
       const y = 0.6 + Math.random() * 0.3;
       await plantTree({ x, y, color, mood: 'relaxed' });
       setPlanted(true);
+    }
+  };
+
+  const generateMeditation = async () => {
+    if (!meditationTheme.trim()) return;
+
+    setGenerating(true);
+    try {
+      const response = await apiRequest('/dhwani/generate', {
+        method: 'POST',
+        body: JSON.stringify({
+          theme: meditationTheme,
+          duration: 5,
+          mood: 'calm'
+        }),
+      });
+      setMeditationScript(response.script);
+    } catch (error) {
+      console.error('Error generating meditation:', error);
+    } finally {
+      setGenerating(false);
     }
   };
 
@@ -399,6 +422,96 @@ export default function DhwaniPage() {
                 )}
               </div>
             </div>
+          </div>
+
+          {/* Guided Meditation Section */}
+          <div className='glass-card max-w-2xl mx-auto mt-12 animate-float-slow'>
+            <div className='text-center mb-8'>
+              <div className='text-5xl mb-4 animate-bounce'>🧘</div>
+              <h2 className='text-3xl font-light text-slate-700 dark:text-slate-200 mb-4'>Guided Meditation</h2>
+              <p className='text-slate-600 dark:text-slate-400 font-light'>Calming scripts to guide your meditation practice</p>
+            </div>
+
+            <div className='flex flex-col gap-6 items-center max-w-md mx-auto'>
+              <div className='w-full'>
+                <label className='block text-sm font-medium text-slate-700 dark:text-slate-300 mb-3 text-center'>
+                  Meditation Theme:
+                </label>
+                <input
+                  type="text"
+                  value={meditationTheme}
+                  onChange={(e) => setMeditationTheme(e.target.value)}
+                  className='w-full px-4 py-3 rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border border-slate-200 dark:border-slate-600 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20 transition-all duration-300 text-slate-700 dark:text-slate-200'
+                  placeholder='Enter a theme for your meditation (e.g., beach, forest, mountains)'
+                />
+              </div>
+
+              <div className='w-full'>
+                <button
+                  onClick={generateMeditation}
+                  className='w-full px-4 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 transition-all duration-300 text-white font-medium flex items-center justify-center gap-2'
+                >
+                  {generating ? (
+                    <>
+                      <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4zm16 0a8 8 0 01-8 8v-8h8z"></path>
+                      </svg>
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <span>🎶</span>
+                      Generate Meditation Script
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {meditationScript && (
+                <div className='w-full p-4 rounded-2xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700'>
+                  <h3 className='text-lg font-medium text-slate-700 dark:text-slate-200 mb-2'>Your Meditation Script</h3>
+                  <p className='text-slate-600 dark:text-slate-400 leading-relaxed' style={{ whiteSpace: 'pre-line' }}>
+                    {meditationScript}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Guided Meditation Generator */}
+          <div className='glass-card max-w-2xl mx-auto mt-8 animate-float-slow'>
+            <div className='text-center mb-8'>
+              <div className='text-5xl mb-4 animate-bounce'>🧘</div>
+              <h2 className='text-3xl font-light text-slate-700 dark:text-slate-200 mb-4'>Guided Meditation</h2>
+              <p className='text-slate-600 dark:text-slate-400 font-light'>AI-generated personalized meditation scripts</p>
+            </div>
+
+            <div className='flex flex-col gap-4 items-center max-w-md mx-auto'>
+              <input
+                type='text'
+                placeholder='Enter meditation theme (e.g., stress relief, self-love)'
+                value={meditationTheme}
+                onChange={(e) => setMeditationTheme(e.target.value)}
+                className='w-full px-4 py-3 rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border border-slate-200 dark:border-slate-600 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20 transition-all duration-300 text-slate-700 dark:text-slate-200'
+              />
+              <button
+                onClick={generateMeditation}
+                disabled={generating || !meditationTheme.trim()}
+                className='btn-primary w-full animate-pulse-soft disabled:opacity-50'
+              >
+                {generating ? 'Generating...' : '✨ Generate Meditation'}
+              </button>
+            </div>
+
+            {meditationScript && (
+              <div className='mt-6 p-4 bg-slate-50/50 dark:bg-slate-800/50 rounded-2xl'>
+                <h3 className='text-lg font-medium text-slate-700 dark:text-slate-200 mb-3'>Your Meditation Script</h3>
+                <div className='text-sm text-slate-600 dark:text-slate-400 whitespace-pre-line leading-relaxed'>
+                  {meditationScript}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </main>

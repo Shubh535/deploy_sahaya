@@ -1,3 +1,4 @@
 @echo off
-cd /d d:\websahaya\api_express
+REM Start the Express API from this repo
+cd /d "%~dp0api_express"
 node index.js

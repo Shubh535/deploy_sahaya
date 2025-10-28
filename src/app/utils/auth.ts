@@ -2,6 +2,22 @@
 import { NextRequest } from 'next/server';
 import { getAdminAuth } from '../../firebase';
 
+function shouldBypassAuth(request?: NextRequest) {
+  if (process.env.DEV_BYPASS_AUTH === '1') return true;
+  if (request?.headers.get('x-dev-auth') === 'allow') return true;
+
+  const privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
+  if (
+    process.env.NODE_ENV !== 'production' &&
+    (!privateKey || privateKey.includes('your_private_key'))
+  ) {
+    console.warn('[auth] Falling back to dev bypass – Firebase credentials missing or placeholder');
+    return true;
+  }
+
+  return false;
+}
+
 export async function authenticateUser(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
@@ -23,8 +39,8 @@ export async function authenticateUser(request: NextRequest) {
 }
 
 export async function requireAuth(request: NextRequest) {
-  // Dev bypass for testing
-  if (process.env.DEV_BYPASS_AUTH === '1' || request.headers.get('x-dev-auth') === 'allow') {
+  // Dev bypass for testing and placeholder credentials
+  if (shouldBypassAuth(request)) {
     return { uid: 'dev-user', email: 'dev@example.com' };
   }
 

@@ -27,7 +27,7 @@ Emotional State: ${JSON.stringify(emotionalState)}`;
 
         console.log('Making Gemini API call...');
         const res = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`,
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -72,7 +72,7 @@ Emotional State: ${JSON.stringify(emotionalState)}`;
           console.log('Parsed insights array:', insights);
           if (Array.isArray(insights) && insights.length) {
             console.log('Successfully generated insights from Gemini:', insights);
-            return NextResponse.json({ insights });
+              return NextResponse.json({ insights }, { headers: { 'x-ai-source': 'gemini' } });
           }
         }
       } catch (e) {
@@ -88,7 +88,7 @@ Emotional State: ${JSON.stringify(emotionalState)}`;
       'Reach out to a supportive person or resource if needed.',
       'Close the day with one gratitude to reinforce positive attention.'
     ];
-    return NextResponse.json({ insights: fallback });
+      return NextResponse.json({ insights: fallback }, { headers: { 'x-ai-source': 'fallback' } });
   } catch (error) {
     console.error('insights error:', error);
     return NextResponse.json({ error: 'Failed to generate insights' }, { status: 500 });

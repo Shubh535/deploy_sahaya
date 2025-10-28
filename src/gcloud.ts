@@ -7,6 +7,9 @@ import { DlpServiceClient } from '@google-cloud/dlp';
 const gcpProject = process.env.GOOGLE_CLOUD_PROJECT || process.env.FIREBASE_PROJECT_ID;
 
 let dlp: DlpServiceClient | null = null;
+let dlpSoftDisabled = false;
+let dlpWarningLogged = false;
+
 try {
   // Support both GOOGLE_APPLICATION_CREDENTIALS (path) and GOOGLE_APPLICATION_CREDENTIALS_JSON (inline JSON)
   const inlineCreds = process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON;
@@ -17,21 +20,53 @@ try {
   }
   dlp = new DlpServiceClient(clientOptions as any);
 } catch (e) {
-  console.warn('DLP client init failed or missing credentials. DLP features may be limited.', e);
+  console.warn('DLP client init failed or missing credentials. Falling back to basic redaction.', e);
+  dlpSoftDisabled = true;
+}
+
+const BASIC_PATTERNS: Array<{ regex: RegExp; replacement: string }> = [
+  { regex: /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, replacement: '[EMAIL_ADDRESS]' },
+  { regex: /(?:\+?\d{1,3}[\s-]?)?(?:\(\d{3}\)|\d{3})[\s-]?\d{3}[\s-]?\d{4}/g, replacement: '[PHONE_NUMBER]' },
+  { regex: /\b([A-Z][a-z]+\s){1,3}[A-Z][a-z]+\b/g, replacement: '[PERSON_NAME]' },
+];
+
+function basicRedact(text: string) {
+  return BASIC_PATTERNS.reduce((acc, pattern) => acc.replace(pattern.regex, pattern.replacement), text);
+}
+
+function shouldSkipDlp() {
+  if (!dlp || dlpSoftDisabled) return true;
+  if (!gcpProject) {
+    if (!dlpWarningLogged) {
+      console.warn('No GOOGLE_CLOUD_PROJECT/FIREBASE_PROJECT_ID found. Skipping DLP anonymization.');
+      dlpWarningLogged = true;
+    }
+    return true;
+  }
+  return false;
 }
 
 export async function anonymizeText(text: string): Promise<string> {
+  if (!text || !text.trim()) return text;
+
+  if (shouldSkipDlp()) {
+    return basicRedact(text);
+  }
+
   try {
-  if (!dlp) return text;
-    const project = gcpProject || 'dummy-project';
+    const parent = dlp!.projectPath(gcpProject!);
     const request = {
-      parent: dlp.projectPath(project),
+      parent,
       item: { value: text },
       deidentifyConfig: {
         infoTypeTransformations: {
           transformations: [
             {
-              infoTypes: [{ name: 'EMAIL_ADDRESS' }, { name: 'PHONE_NUMBER' }, { name: 'PERSON_NAME' }],
+              infoTypes: [
+                { name: 'EMAIL_ADDRESS' },
+                { name: 'PHONE_NUMBER' },
+                { name: 'PERSON_NAME' },
+              ],
               primitiveTransformation: { replaceWithInfoTypeConfig: {} },
             },
           ],
@@ -45,12 +80,24 @@ export async function anonymizeText(text: string): Promise<string> {
         ],
       },
     };
-  const [response] = await dlp.deidentifyContent(request as any);
-  const value = (response as any)?.item?.value as string | undefined;
-  return value ?? text;
-  } catch (error) {
-    console.error('DLP anonymization error:', error);
-    return text; // Return original text if anonymization fails
+
+    const [response] = await dlp!.deidentifyContent(request as any);
+    const value = (response as any)?.item?.value as string | undefined;
+    return value ?? text;
+  } catch (error: any) {
+    const message = error?.message || '';
+    const code = error?.code || error?.details || '';
+    const combined = `${code} ${message}`.trim();
+    if (!dlpWarningLogged) {
+      console.warn('DLP anonymization unavailable. Falling back to basic redaction.', combined || error);
+      dlpWarningLogged = true;
+    }
+
+    if (/SERVICE_DISABLED|PERMISSION_DENIED|PROJECT\s+\d+\s+does\s+not\s+exist/i.test(combined)) {
+      dlpSoftDisabled = true;
+    }
+
+    return basicRedact(text);
   }
 }
 
@@ -60,7 +107,7 @@ export async function analyzeJournalEntry({ entry, language = 'en' }: { entry: s
 
   try {
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -118,7 +165,7 @@ export async function chatWithGemini({ message, mode = 'listener', language = 'e
 
   try {
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -142,7 +189,7 @@ export async function analyzeMoodAI({ journal, health, mood }: { journal: string
 
   try {
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

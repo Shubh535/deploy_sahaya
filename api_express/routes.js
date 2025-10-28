@@ -1,4 +1,3 @@
-
 // Modular route handlers for Sahay API
 const express = require('express');
 const router = express.Router();
@@ -32,6 +31,8 @@ router.use('/security', require('./routes/security'));
 router.use('/digital-twin', require('./routes/digital-twin'));
 router.use('/digital-twin', require('./routes/digital-twin-analyze'));
 router.use('/health', require('./routes/health'));
+
+router.use('/dhwani', require('./routes/dhwani'));
 
 // Test route
 router.post('/soundscape-test', (req, res) => {
