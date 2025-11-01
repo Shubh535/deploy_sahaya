@@ -2,7 +2,7 @@
 'use client';
 import React, { useState } from 'react';
 import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { auth } from '../firebaseClient';
+import { auth as getAuth } from '../firebaseClient';
 import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
@@ -17,7 +17,8 @@ export default function LoginPage() {
     setLoading(true);
     setError('');
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      if (typeof window === 'undefined') return;
+      await signInWithEmailAndPassword(getAuth(), email, password);
       router.push('/');
     } catch (err: any) {
       setError(err.message);
@@ -29,7 +30,8 @@ export default function LoginPage() {
     setLoading(true);
     setError('');
     try {
-      await signInWithPopup(auth, new GoogleAuthProvider());
+      if (typeof window === 'undefined') return;
+      await signInWithPopup(getAuth(), new GoogleAuthProvider());
       router.push('/');
     } catch (err: any) {
       setError(err.message);

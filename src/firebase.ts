@@ -1,5 +1,7 @@
 // Firebase Admin SDK setup for Firestore and Auth (server-side)
 import * as admin from 'firebase-admin';
+import { existsSync, readFileSync } from 'fs';
+import { resolve } from 'path';
 
 let initialized = false;
 
@@ -51,10 +53,55 @@ function ensureApp() {
 
   // If we reach here, we intentionally do NOT throw during import/build.
   // Actual getters will throw when used without valid credentials.
+
+  const serviceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH;
+  const candidatePaths = [
+    serviceAccountPath,
+    'api_express/serviceAccountKey.json',
+    'serviceAccountKey.json',
+  ].filter((p): p is string => !!p);
+
+  for (const candidate of candidatePaths) {
+    const resolvedCandidate = resolve(process.cwd(), candidate);
+    if (!existsSync(resolvedCandidate)) continue;
+    try {
+      const creds = JSON.parse(readFileSync(resolvedCandidate, 'utf8'));
+      admin.initializeApp({ credential: admin.credential.cert(creds) });
+      initialized = true;
+      return;
+    } catch (e) {
+      console.warn(
+        '[firebase-admin] Failed to initialize with service account file at %s:',
+        resolvedCandidate,
+        e,
+      );
+    }
+  }
 }
 
 const db = () => {
   ensureApp();
+  
+  // In dev mode with bypass, return a mock or throw a more helpful error
+  if (process.env.DEV_BYPASS_AUTH === '1' && !admin.apps.length) {
+    console.warn('[firebase-admin] DEV_BYPASS_AUTH is enabled but Firebase not initialized');
+    console.warn('[firebase-admin] Using serviceAccountKey.json for initialization');
+    
+    // Try one more time with service account file
+    try {
+      const { readFileSync } = require('fs');
+      const { resolve } = require('path');
+      const serviceAccountPath = resolve(process.cwd(), 'src/serviceAccountKey.json');
+      const creds = JSON.parse(readFileSync(serviceAccountPath, 'utf8'));
+      admin.initializeApp({ credential: admin.credential.cert(creds) });
+      console.log('[firebase-admin] Successfully initialized with service account file');
+      return admin.firestore();
+    } catch (e) {
+      console.error('[firebase-admin] Failed to initialize:', e);
+      throw new Error('Firebase admin not initialized: missing credentials');
+    }
+  }
+  
   if (!admin.apps.length) throw new Error('Firebase admin not initialized: missing credentials');
   return admin.firestore();
 };

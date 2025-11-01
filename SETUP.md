@@ -77,6 +77,9 @@ service cloud.firestore {
 - `/src/app/sanjha-grove/` — Real-time garden logic
 
 ## 8. Deployment
+- Copy `.env.production.example` to the appropriate files for your hosting platform (e.g. `.env.production` for Next.js, Secret Manager entries for Cloud Run).
+- Replace placeholder API endpoints (`NEXT_PUBLIC_API_BASE_URL`, `MEMORY_SERVICE_URL`) with your deployed HTTPS URLs.
+- Mount service account JSONs at the paths referenced in the production env file or supply inline JSON secrets.
 - Deploy frontend (Vercel, Netlify, etc.)
 - Deploy backend (Render, Railway, GCP, etc.)
 - Set environment variables in your deployment platform

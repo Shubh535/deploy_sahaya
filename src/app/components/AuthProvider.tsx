@@ -2,7 +2,7 @@
 'use client';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
-import { auth } from '../firebaseClient';
+import { auth as getAuth } from '../firebaseClient';
 
 interface AuthContextType {
   user: User | null;
@@ -20,7 +20,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    // Only initialize Firebase on client side
+    if (typeof window === 'undefined') {
+      setLoading(false);
+      return;
+    }
+
+    const unsubscribe = onAuthStateChanged(getAuth(), (firebaseUser) => {
       setUser(firebaseUser);
       setLoading(false);
     });

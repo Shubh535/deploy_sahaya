@@ -106,23 +106,41 @@ router.get('/sessions', requireAuth, async (req, res) => {
     const userId = req.user.uid;
     const limit = parseInt(req.query.limit) || 50;
 
+    // Query without orderBy to avoid index requirement
     const sessionsRef = db.collection('reflection_sessions')
       .where('userId', '==', userId)
-      .orderBy('createdAt', 'desc')
       .limit(limit);
 
     const snapshot = await sessionsRef.get();
     const sessions = [];
+    
+    console.log(`Found ${snapshot.size} sessions for user ${userId}`);
 
     snapshot.forEach(doc => {
+      const data = doc.data();
+      console.log(`Session ${doc.id}:`, {
+        emotionalState: data.emotionalState,
+        createdAt: data.createdAt,
+        type: data.type
+      });
       sessions.push({
         id: doc.id,
-        ...doc.data(),
-        createdAt: doc.data().createdAt?.toDate?.()?.toISOString() || doc.data().createdAt,
-        completedAt: doc.data().completedAt?.toDate?.()?.toISOString() || doc.data().completedAt,
-        updatedAt: doc.data().updatedAt?.toDate?.()?.toISOString() || doc.data().updatedAt
+        ...data,
+        createdAt: data.createdAt?.toDate?.()?.toISOString() || data.createdAt,
+        completedAt: data.completedAt?.toDate?.()?.toISOString() || data.completedAt,
+        updatedAt: data.updatedAt?.toDate?.()?.toISOString() || data.updatedAt
       });
     });
+
+    // Sort by createdAt descending on the client side (to avoid Firestore index requirement)
+    sessions.sort((a, b) => {
+      const dateA = new Date(a.createdAt || 0);
+      const dateB = new Date(b.createdAt || 0);
+      return dateB - dateA; // Descending order (newest first)
+    });
+
+    console.log(`Returning ${sessions.length} sessions with emotions:`, 
+      sessions.map(s => s.emotionalState?.primaryEmotion || 'no emotion'));
 
     res.json({ sessions });
   } catch (err) {

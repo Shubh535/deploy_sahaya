@@ -13,9 +13,39 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
+// Lazy initialization to avoid build-time issues
+let app: any;
+let auth: any;
+let db: any;
 
-const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+function getFirebaseApp() {
+  if (typeof window === 'undefined') {
+    throw new Error('Firebase can only be used on the client side');
+  }
+  if (!app) {
+    app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+  }
+  return app;
+}
 
-export { app, auth, db };
+function getFirebaseAuth() {
+  if (typeof window === 'undefined') {
+    throw new Error('Firebase Auth can only be used on the client side');
+  }
+  if (!auth) {
+    auth = getAuth(getFirebaseApp());
+  }
+  return auth;
+}
+
+function getFirebaseDb() {
+  if (typeof window === 'undefined') {
+    throw new Error('Firebase Firestore can only be used on the client side');
+  }
+  if (!db) {
+    db = getFirestore(getFirebaseApp());
+  }
+  return db;
+}
+
+export { getFirebaseApp as app, getFirebaseAuth as auth, getFirebaseDb as db };

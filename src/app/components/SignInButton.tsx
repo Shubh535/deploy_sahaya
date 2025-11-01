@@ -2,18 +2,21 @@
 import React from "react";
 import { useAuth } from "./AuthProvider";
 import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
-import { app } from "../firebaseClient";
+import { app as getApp } from "../firebaseClient";
 
 export default function SignInButton() {
   const { user, loading } = useAuth();
-  const auth = getAuth(app);
 
   const handleSignIn = async () => {
+    if (typeof window === 'undefined') return;
+    const auth = getAuth(getApp());
     const provider = new GoogleAuthProvider();
     await signInWithPopup(auth, provider);
   };
 
   const handleSignOut = async () => {
+    if (typeof window === 'undefined') return;
+    const auth = getAuth(getApp());
     await signOut(auth);
   };
 

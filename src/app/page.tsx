@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { useAuth } from './components/AuthProvider';
 import { signOut } from 'firebase/auth';
-import { auth } from './firebaseClient';
+import { auth as getAuth } from './firebaseClient';
 import { useState, useEffect } from 'react';
 
 export default function Home() {
@@ -81,7 +81,10 @@ export default function Home() {
                 </span>
                 <button
                   className='btn-outline'
-                  onClick={() => signOut(auth)}
+                  onClick={() => {
+                    if (typeof window === 'undefined') return;
+                    signOut(getAuth());
+                  }}
                 >
                   Sign Out
                 </button>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { collection, onSnapshot, addDoc, query, orderBy, Timestamp } from "firebase/firestore";
-import { db } from "../firebaseClient";
+import { db as getDb } from "../firebaseClient";
 
 export type GardenTree = {
   id: string;
@@ -14,7 +14,8 @@ export type GardenTree = {
 export function useGarden() {
   const [trees, setTrees] = useState<GardenTree[]>([]);
   useEffect(() => {
-    const q = query(collection(db, "grove-trees"), orderBy("createdAt"));
+    if (typeof window === 'undefined') return;
+    const q = query(collection(getDb(), "grove-trees"), orderBy("createdAt"));
     const unsub = onSnapshot(q, (snap) => {
       setTrees(
         snap.docs.map((doc) => ({ id: doc.id, ...doc.data() } as GardenTree))
@@ -26,7 +27,8 @@ export function useGarden() {
 }
 
 export async function plantTree({ x, y, color, mood }: Omit<GardenTree, "id" | "createdAt">) {
-  await addDoc(collection(db, "grove-trees"), {
+  if (typeof window === 'undefined') return;
+  await addDoc(collection(getDb(), "grove-trees"), {
     x,
     y,
     color,

@@ -1,0 +1,20 @@
+﻿const DEFAULT_MODE = 'listener';
+const DEFAULT_LANGUAGE = 'en';
+
+const LANGUAGE_REGISTRY = {
+  en: {
+    label: 'English',
+    locale: 'en-IN',
+    translatorDirective: `Respond entirely in English while preserving the emotional tone provided by the user. If the user mixes languages, translate gracefully and keep important Indian-origin terms transliterated when helpful.`
+  },
+  hi: {
+    label: 'हद',
+    locale: 'hi-IN',
+    translatorDirective: `CRITICAL: You MUST respond ONLY in Hindi (हद). उततर कवल हद म द यद उपयगकरत अगरज य मशरत भष क परयग कर त भव क सरकषत रखत हए हद म अनवद कर द आवशयक हन पर अगरज शबद क दवनगर म लख य कषठक म मल शबद जड DO NOT respond in English. कवल हद म जवब द`
+  },
+  bn: {
+    label: 'বল',
+    locale: 'bn-IN',
+    translatorDirective: `CRITICAL: You MUST respond ONLY in Bengali (বল). উততর শধমতর বলয দন বযবহরকরর অনভত বজয রখ উষণ বলয উততর দন পরযজন ইরজ ব হনদ শবদগলক বলয বযখয করন ব রমন হরফ উললখ করন যত অরথ সপষট থক DO NOT respond in English. শধমতর বলয উততর দন`
+  }
+};

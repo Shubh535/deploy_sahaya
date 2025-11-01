@@ -1,63 +1,48 @@
+// Next.js API route for /api/health
+// Proxies GET and POST requests to backend Express server
+
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '../../utils/auth';
-import { getDb } from '../../../firebase';
 
-export async function POST(request: NextRequest) {
-  try {
-    const authResult = await requireAuth(request);
-    if (authResult instanceof Response) {
-      return authResult;
-    }
-
-    const user = authResult;
-    const healthData = await request.json();
-
-    const dataToSave = {
-      ...healthData,
-      userId: user.uid,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-
-    // Save to Firestore
-  const docRef = await getDb().collection('health_data').add(dataToSave);
-
-    return NextResponse.json({
-      success: true,
-      id: docRef.id,
-      message: 'Health data saved successfully'
-    });
-  } catch (error: any) {
-    console.error('Health data save error:', error);
-    return NextResponse.json({ error: 'Failed to save health data' }, { status: 500 });
-  }
-}
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://backend-406762118051.asia-south1.run.app';
 
 export async function GET(request: NextRequest) {
   try {
-    const authResult = await requireAuth(request);
-    if (authResult instanceof Response) {
-      return authResult;
-    }
+    const authHeader = request.headers.get('authorization');
+    
+    const response = await fetch(`${BACKEND_URL}/api/health`, {
+      method: 'GET',
+      headers: {
+        'Authorization': authHeader || '',
+        'Content-Type': 'application/json',
+      },
+    });
 
-    const user = authResult;
-    const { searchParams } = new URL(request.url);
-    const limit = parseInt(searchParams.get('limit') || '10');
-
-  const snapshot = await getDb().collection('health_data')
-      .where('userId', '==', user.uid)
-      .orderBy('createdAt', 'desc')
-      .limit(limit)
-      .get();
-
-    const healthData = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
-
-    return NextResponse.json({ healthData });
+    const data = await response.json();
+    return NextResponse.json(data, { status: response.status });
   } catch (error: any) {
-    console.error('Health data fetch error:', error);
-    return NextResponse.json({ error: 'Failed to fetch health data' }, { status: 500 });
+    console.error('Error proxying health GET:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const authHeader = request.headers.get('authorization');
+    const body = await request.json();
+    
+    const response = await fetch(`${BACKEND_URL}/api/health`, {
+      method: 'POST',
+      headers: {
+        'Authorization': authHeader || '',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
+    const data = await response.json();
+    return NextResponse.json(data, { status: response.status });
+  } catch (error: any) {
+    console.error('Error proxying health POST:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

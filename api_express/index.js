@@ -1,6 +1,31 @@
-// Load environment variables
+// Load environment variables (optional for production)
+const path = require('path');
 console.log('Loading environment variables...');
-require('dotenv').config({ path: require('path').resolve(__dirname, '../.env.local') });
+try {
+  require('dotenv').config({ path: path.resolve(__dirname, '../.env.local') });
+  console.log('Loaded .env.local');
+} catch (error) {
+  console.log('Could not load .env.local, using environment variables:', error.message);
+}
+
+if (process.env.GOOGLE_APPLICATION_CREDENTIALS && !path.isAbsolute(process.env.GOOGLE_APPLICATION_CREDENTIALS)) {
+  process.env.GOOGLE_APPLICATION_CREDENTIALS = path.resolve(
+    __dirname,
+    '..',
+    process.env.GOOGLE_APPLICATION_CREDENTIALS
+  );
+  console.log('Resolved GOOGLE_APPLICATION_CREDENTIALS to', process.env.GOOGLE_APPLICATION_CREDENTIALS);
+}
+
+if (process.env.VERTEX_SERVICE_ACCOUNT_PATH && !path.isAbsolute(process.env.VERTEX_SERVICE_ACCOUNT_PATH)) {
+  process.env.VERTEX_SERVICE_ACCOUNT_PATH = path.resolve(
+    __dirname,
+    '..',
+    process.env.VERTEX_SERVICE_ACCOUNT_PATH
+  );
+  console.log('Resolved VERTEX_SERVICE_ACCOUNT_PATH to', process.env.VERTEX_SERVICE_ACCOUNT_PATH);
+}
+
 console.log('Environment variables loaded');
 
 console.log('Starting Sahay API Gateway...');
@@ -10,7 +35,7 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '15mb' }));
 
 console.log('Express app created');
 

@@ -28,6 +28,8 @@ try {
 router.use('/practice', require('./routes/practice'));
 router.use('/security', require('./routes/security'));
 
+router.use('/wellness', require('./routes/wellness'));
+
 router.use('/digital-twin', require('./routes/digital-twin'));
 router.use('/digital-twin', require('./routes/digital-twin-analyze'));
 router.use('/health', require('./routes/health'));
