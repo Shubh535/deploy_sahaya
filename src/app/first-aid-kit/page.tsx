@@ -2,26 +2,87 @@
 import React, { useState, useRef, useEffect, createContext, useContext } from "react";
 import Image from "next/image";
 import RequireAuth from "../components/RequireAuth";
+import SmartBreathingCoach from "./SmartBreathingCoach";
+import AffirmationStream from "./AffirmationStream";
+import MindfulnessMicroSessions from "./MindfulnessMicroSessions";
+import ProgressiveMuscleRelaxation from "./ProgressiveMuscleRelaxation";
+import StressThermometer from "./StressThermometer";
 
 const BreathingContext = createContext<any>(null);
+
+interface Sound {
+  name: string;
+  url: string;
+  benefit: string;
+}
+
+interface SoundRecommendation {
+  category: string;
+  sounds: Sound[];
+  reason: string;
+  priority?: string;
+}
 
 function SoundscapePlayer() {
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
   const [playing, setPlaying] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
-  const SOUNDS = [
-    { key: 'rain', label: 'Rain', url: '/soundscapes/rain.mp3' },
-    { key: 'forest', label: 'Forest', url: '/soundscapes/forest.mp3' },
-    { key: 'waves', label: 'Waves', url: '/soundscapes/waves.mp3' },
-    { key: 'om', label: 'Om Chant', url: '/soundscapes/om.mp3' },
-  ];
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [recommendations, setRecommendations] = useState<SoundRecommendation[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch AI-powered sound recommendations on component mount
+  useEffect(() => {
+    fetchRecommendations();
+  }, []);
+
+  const fetchRecommendations = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch('/api/unified', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          route: 'soundscape/recommend',
+          data: {}
+        })
+      });
+
+      if (!response.ok) throw new Error('Failed to fetch recommendations');
+
+      const data = await response.json();
+      console.log('🎵 Sound recommendations:', data);
+      setRecommendations(data.recommendations || []);
+    } catch (err: any) {
+      console.error('Error fetching sound recommendations:', err);
+      setError(err.message);
+      // Fallback to default sounds
+      setRecommendations([
+        {
+          category: 'general-wellness',
+          sounds: [
+            { name: 'Ocean Waves', url: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3', benefit: 'Natural calming sound for relaxation' },
+            { name: 'Gentle Rain', url: 'https://cdn.pixabay.com/download/audio/2021/08/04/audio_12b3f47ae3.mp3', benefit: 'Soothing precipitation sounds' },
+            { name: 'Forest Birds', url: 'https://cdn.pixabay.com/download/audio/2022/03/10/audio_4a06674886.mp3', benefit: 'Natural sounds for peace' }
+          ],
+          reason: 'Calming sounds for general wellness and relaxation.'
+        }
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle audio playback when sound is selected
   useEffect(() => {
     if (!selected) return;
     if (audio) {
       audio.pause();
       setAudio(null);
     }
-    const a = new window.Audio(SOUNDS.find(s => s.key === selected)?.url || '');
+    const a = new window.Audio(selected);
     a.loop = true;
     setAudio(a);
     setPlaying(false);
@@ -29,45 +90,114 @@ function SoundscapePlayer() {
       a.pause();
     };
   }, [selected]);
+
   const handlePlay = () => {
     if (audio) {
       audio.play();
       setPlaying(true);
     }
   };
+
   const handlePause = () => {
     if (audio) {
       audio.pause();
       setPlaying(false);
     }
   };
+
   return (
-    <div className="flex flex-col items-center gap-2 bg-indigo-50 rounded-xl p-6 shadow border border-indigo-100 animate-fadein mt-6">
-      <div className="text-lg font-semibold text-indigo-700 mb-2">Calming Soundscapes</div>
-      <div className="flex gap-2 mb-2">
-        {SOUNDS.map(s => (
-          <button
-            key={s.key}
-            className={`px-3 py-1 rounded-lg font-semibold border ${selected === s.key ? 'bg-indigo-200 border-indigo-400' : 'bg-white border-indigo-100'} transition`}
-            onClick={() => setSelected(s.key)}
-          >
-            {s.label}
-          </button>
-        ))}
-      </div>
-      <div className="flex gap-2">
+    <div className="flex flex-col gap-4 bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl p-6 shadow-lg border border-purple-100 animate-fadein mt-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <div className="text-xl font-bold text-purple-700 mb-1">🎵 AI-Powered Soundscapes</div>
+          <div className="text-sm text-gray-600">Personalized therapeutic sounds based on your wellness data</div>
+        </div>
         <button
-          className="px-4 py-2 rounded-lg bg-indigo-500 text-white font-semibold shadow disabled:opacity-60"
-          onClick={handlePlay}
-          disabled={!selected || playing}
-        >Play</button>
-        <button
-          className="px-4 py-2 rounded-lg bg-indigo-300 text-white font-semibold shadow disabled:opacity-60"
-          onClick={handlePause}
-          disabled={!selected || !playing}
-        >Pause</button>
+          onClick={fetchRecommendations}
+          disabled={loading}
+          className="px-4 py-2 rounded-lg bg-purple-500 text-white font-semibold shadow hover:bg-purple-600 transition disabled:opacity-50"
+        >
+          {loading ? '🔄' : '✨'} Refresh
+        </button>
       </div>
-      <div className="text-xs text-gray-500 mt-2">Choose a soundscape and press Play. Volume is controlled by your device.</div>
+
+      {loading && (
+        <div className="text-center py-8 text-gray-500">
+          <div className="animate-spin text-4xl mb-2">🎵</div>
+          Loading personalized soundscapes...
+        </div>
+      )}
+
+      {error && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm text-yellow-800">
+          ⚠️ Using default sounds (AI recommendations temporarily unavailable)
+        </div>
+      )}
+
+      {!loading && recommendations.map((rec, idx) => (
+        <div key={idx} className="bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-sm border border-purple-100">
+          <div className="flex items-start gap-3 mb-3">
+            <div className="text-2xl">{rec.priority === 'high' ? '⭐' : '🎯'}</div>
+            <div className="flex-1">
+              <div className="font-semibold text-gray-800 capitalize mb-1">
+                {rec.category.replace(/-/g, ' ')}
+              </div>
+              <div className="text-sm text-gray-600">{rec.reason}</div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {rec.sounds.map((sound, sidx) => (
+              <button
+                key={sidx}
+                onClick={() => {
+                  setSelected(sound.url);
+                  setSelectedCategory(rec.category);
+                }}
+                className={`p-3 rounded-lg text-left transition-all ${
+                  selected === sound.url
+                    ? 'bg-purple-100 border-2 border-purple-400 shadow-md'
+                    : 'bg-gray-50 border border-gray-200 hover:bg-purple-50 hover:border-purple-200'
+                }`}
+              >
+                <div className="font-semibold text-gray-800 text-sm mb-1">{sound.name}</div>
+                <div className="text-xs text-gray-500">{sound.benefit}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      {selected && (
+        <div className="flex items-center justify-center gap-4 bg-white/90 backdrop-blur-sm rounded-lg p-4 border border-purple-200 shadow-sm">
+          <div className="flex-1 text-center">
+            <div className="text-sm text-gray-500 mb-1">Now Playing:</div>
+            <div className="font-semibold text-gray-800">
+              {recommendations.flatMap(r => r.sounds).find(s => s.url === selected)?.name || 'Selected Sound'}
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <button
+              className="px-6 py-2 rounded-lg bg-purple-500 text-white font-semibold shadow hover:bg-purple-600 transition disabled:opacity-50"
+              onClick={handlePlay}
+              disabled={!selected || playing}
+            >
+              ▶️ Play
+            </button>
+            <button
+              className="px-6 py-2 rounded-lg bg-purple-300 text-white font-semibold shadow hover:bg-purple-400 transition disabled:opacity-50"
+              onClick={handlePause}
+              disabled={!selected || !playing}
+            >
+              ⏸️ Pause
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="text-xs text-gray-500 text-center">
+        💡 Tip: Use headphones for the best therapeutic experience. Volume is controlled by your device.
+      </div>
     </div>
   );
 }
@@ -210,6 +340,7 @@ function CrisisButton() {
 
 export default function FirstAidKitPage() {
   const [showAR, setShowAR] = useState(false);
+  const [activeModule, setActiveModule] = useState<'breathing' | 'affirmations' | 'mindfulness' | null>(null);
   const [particles, setParticles] = useState<Array<{
     left: string;
     top: string;
@@ -280,31 +411,120 @@ export default function FirstAidKitPage() {
             </p>
           </header>
 
-          {/* Main toolkit */}
-          <div className='glass-card max-w-3xl mx-auto animate-float-gentle'>
-            <div className='p-8 space-y-8'>
-              {/* AR Grounding Button */}
-              <div className='text-center'>
-                <button
-                  className='btn-primary animate-pulse-soft group'
-                  onClick={() => setShowAR(true)}
-                  aria-label="Open AR Grounding"
-                >
-                  <span className='text-2xl mr-2 group-hover:animate-bounce'>🌐</span>
-                  AR Grounding Experience
-                </button>
+          {/* Module Selection or Active Module */}
+          {!activeModule ? (
+            <>
+              {/* Wellness Module Selection Grid */}
+              <div className='glass-card max-w-3xl mx-auto animate-float-gentle mb-8'>
+                <div className='p-8 space-y-6'>
+                  <h2 className='text-3xl font-light text-slate-700 dark:text-slate-200 mb-6'>
+                    Choose Your Wellness Module
+                  </h2>
+                  
+                  <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+                    {/* Smart Breathing Coach */}
+                    <button
+                      onClick={() => setActiveModule('breathing')}
+                      className='group flex flex-col items-center gap-3 p-6 rounded-2xl bg-gradient-to-br from-blue-100 to-cyan-100 hover:from-blue-200 hover:to-cyan-200 dark:from-blue-900/30 dark:to-cyan-900/30 dark:hover:from-blue-800/40 dark:hover:to-cyan-800/40 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 border border-blue-200 dark:border-blue-700'
+                    >
+                      <span className='text-5xl group-hover:animate-bounce'>🫁</span>
+                      <h3 className='text-lg font-semibold text-blue-700 dark:text-blue-300'>
+                        Smart Breathing
+                      </h3>
+                      <p className='text-xs text-blue-600 dark:text-blue-400 text-center font-light'>
+                        AI-guided breathing patterns with calming visuals
+                      </p>
+                    </button>
+
+                    {/* Affirmation Stream */}
+                    <button
+                      onClick={() => setActiveModule('affirmations')}
+                      className='group flex flex-col items-center gap-3 p-6 rounded-2xl bg-gradient-to-br from-pink-100 to-rose-100 hover:from-pink-200 hover:to-rose-200 dark:from-pink-900/30 dark:to-rose-900/30 dark:hover:from-pink-800/40 dark:hover:to-rose-800/40 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 border border-pink-200 dark:border-pink-700'
+                    >
+                      <span className='text-5xl group-hover:animate-bounce'>💬</span>
+                      <h3 className='text-lg font-semibold text-pink-700 dark:text-pink-300'>
+                        Affirmations
+                      </h3>
+                      <p className='text-xs text-pink-600 dark:text-pink-400 text-center font-light'>
+                        Personalized affirmations to uplift your mood
+                      </p>
+                    </button>
+
+                    {/* Mindfulness Sessions */}
+                    <button
+                      onClick={() => setActiveModule('mindfulness')}
+                      className='group flex flex-col items-center gap-3 p-6 rounded-2xl bg-gradient-to-br from-purple-100 to-indigo-100 hover:from-purple-200 hover:to-indigo-200 dark:from-purple-900/30 dark:to-indigo-900/30 dark:hover:from-purple-800/40 dark:hover:to-indigo-800/40 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 border border-purple-200 dark:border-purple-700'
+                    >
+                      <span className='text-5xl group-hover:animate-bounce'>🧘</span>
+                      <h3 className='text-lg font-semibold text-purple-700 dark:text-purple-300'>
+                        Mindfulness
+                      </h3>
+                      <p className='text-xs text-purple-600 dark:text-purple-400 text-center font-light'>
+                        Guided micro-sessions with XP rewards
+                      </p>
+                    </button>
+                  </div>
+                </div>
               </div>
 
-              {/* Breathing Module */}
-              <BreathingModule />
+              {/* Traditional toolkit below */}
+              <div className='glass-card max-w-3xl mx-auto animate-float-gentle'>
+                <div className='p-8 space-y-8'>
+                  <h2 className='text-2xl font-light text-slate-700 dark:text-slate-200 mb-4'>
+                    Quick Tools
+                  </h2>
 
-              {/* Soundscape Player */}
-              <SoundscapePlayer />
+                  {/* Stress Thermometer - NEW! */}
+                  <StressThermometer />
 
-              {/* Crisis Support */}
-              <CrisisButton />
-            </div>
-          </div>
+                  {/* AR Grounding Button */}
+                  <div className='text-center'>
+                    <button
+                      className='btn-primary animate-pulse-soft group'
+                      onClick={() => setShowAR(true)}
+                      aria-label="Open AR Grounding"
+                    >
+                      <span className='text-2xl mr-2 group-hover:animate-bounce'>🌐</span>
+                      AR Grounding Experience
+                    </button>
+                  </div>
+
+                  {/* Breathing Module */}
+                  <BreathingModule />
+
+                  {/* Progressive Muscle Relaxation - NEW! */}
+                  <ProgressiveMuscleRelaxation />
+
+                  {/* Soundscape Player - ENHANCED! */}
+                  <SoundscapePlayer />
+
+                  {/* Crisis Support */}
+                  <CrisisButton />
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              {/* Active Module Display */}
+              <div className='glass-card max-w-4xl mx-auto animate-float-gentle'>
+                <div className='p-8'>
+                  {/* Back Button */}
+                  <button
+                    onClick={() => setActiveModule(null)}
+                    className='mb-6 flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-semibold transition-all'
+                  >
+                    <span>←</span>
+                    <span>Back to Modules</span>
+                  </button>
+
+                  {/* Render Selected Module */}
+                  {activeModule === 'breathing' && <SmartBreathingCoach />}
+                  {activeModule === 'affirmations' && <AffirmationStream />}
+                  {activeModule === 'mindfulness' && <MindfulnessMicroSessions />}
+                </div>
+              </div>
+            </>
+          )}
         </div>
 
         {showAR && (
