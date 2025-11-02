@@ -2,174 +2,119 @@
 @import "tailwindcss";
 
 @layer components {
+  /* Stable, clean card design */
   .glass-card {
-    @apply bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 dark:border-gray-700/50 p-8;
+    @apply bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-8;
   }
 
+  /* Clean feature buttons - square shape with proper aspect ratio */
   .btn-feature {
-    @apply flex flex-col items-center gap-1 px-5 py-4 rounded-2xl bg-white/70 dark:bg-gray-800/70 backdrop-blur-md shadow-xl border border-white/30 dark:border-gray-600/50 hover:shadow-2xl hover:scale-105 transition-all duration-500 text-slate-700 dark:text-slate-200 font-medium text-sm min-w-[110px] hover:bg-white/90 dark:hover:bg-gray-800/90;
+    @apply flex flex-col items-center justify-center gap-1 p-4 rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 transition-colors duration-200 text-slate-700 dark:text-slate-200 font-medium text-sm aspect-square hover:bg-emerald-50 dark:hover:bg-slate-700 hover:border-emerald-300 dark:hover:border-emerald-600;
   }
 
+  /* Professional primary button with emerald accent */
   .btn-primary {
-    @apply px-8 py-4 rounded-full bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 hover:from-blue-500 hover:via-indigo-500 hover:to-purple-500 text-white font-semibold shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105;
+    @apply px-8 py-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-sm transition-colors duration-200;
   }
 
+  /* Clean outline button */
   .btn-outline {
-    @apply px-8 py-4 rounded-full border-2 border-blue-400 text-blue-600 hover:bg-blue-400 hover:text-white font-semibold transition-all duration-500 hover:scale-105 shadow-lg hover:shadow-xl;
+    @apply px-8 py-4 rounded-xl border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950 font-semibold transition-colors duration-200;
+  }
+
+  /* Message bubbles for chat interfaces */
+  .message-user {
+    @apply bg-emerald-50 dark:bg-emerald-950 border border-emerald-200 dark:border-emerald-800 rounded-2xl p-4;
+  }
+
+  .message-assistant {
+    @apply bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4;
   }
 }
 
-/* Soothing floating animations */
-.animate-float-gentle {
-  animation: floatGentle 4s ease-in-out infinite;
-}
-
-.animate-float-slow {
-  animation: floatSlow 6s ease-in-out infinite;
-}
-
-.animate-float-wave {
-  animation: floatWave 5s ease-in-out infinite;
-}
-
-.animate-drift {
-  animation: drift 8s linear infinite;
-}
-
-.animate-breathe {
-  animation: breathe 4s ease-in-out infinite;
-}
-
-@keyframes floatGentle {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-8px) rotate(2deg); }
-}
-
-@keyframes floatSlow {
-  0%, 100% { transform: translateY(0px) translateX(0px); }
-  33% { transform: translateY(-12px) translateX(4px); }
-  66% { transform: translateY(-6px) translateX(-4px); }
-}
-
-@keyframes floatWave {
-  0%, 100% { transform: translateY(0px) scale(1); }
-  50% { transform: translateY(-15px) scale(1.05); }
-}
-
-@keyframes drift {
-  0% { transform: translateX(-10px) translateY(-5px); }
-  25% { transform: translateX(10px) translateY(5px); }
-  50% { transform: translateX(5px) translateY(-10px); }
-  75% { transform: translateX(-5px) translateY(10px); }
-  100% { transform: translateX(-10px) translateY(-5px); }
-}
-
-@keyframes breathe {
-  0%, 100% { transform: scale(1); opacity: 0.7; }
-  50% { transform: scale(1.1); opacity: 1; }
-}
-
-/* Enhanced bubble animations */
-@keyframes bubbleGentle {
-  0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
-  50% { transform: translateY(-25px) rotate(180deg) scale(1.1); }
-}
-
-@keyframes bubbleFlow {
-  0%, 100% { transform: translateY(0px) translateX(0px) rotate(0deg); }
-  33% { transform: translateY(-20px) translateX(15px) rotate(120deg); }
-  66% { transform: translateY(-10px) translateX(-10px) rotate(240deg); }
-}
-
-@keyframes bubbleDance {
-  0%, 100% { transform: translateY(0px) scale(1); }
-  25% { transform: translateY(-30px) scale(1.2); }
-  50% { transform: translateY(-15px) scale(0.9); }
-  75% { transform: translateY(-35px) scale(1.1); }
-}
-
-.animate-bubble-gentle { animation: bubbleGentle 8s ease-in-out infinite; }
-.animate-bubble-flow { animation: bubbleFlow 12s ease-in-out infinite; }
-.animate-bubble-dance { animation: bubbleDance 10s ease-in-out infinite; }
-
-/* Gradient animations */
-@keyframes gradientShift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-
-.animate-gradient-flow {
-  background: linear-gradient(-45deg, #e0f2fe, #f0f9ff, #f8fafc, #f1f5f9, #fef3f2);
-  background-size: 400% 400%;
-  animation: gradientShift 15s ease infinite;
-}
-
-/* Particle animations */
-@keyframes particleFloat {
-  0%, 100% { transform: translateY(0px) translateX(0px) scale(1); opacity: 0.3; }
-  25% { transform: translateY(-20px) translateX(10px) scale(1.2); opacity: 0.8; }
-  50% { transform: translateY(-10px) translateX(-5px) scale(0.8); opacity: 0.5; }
-  75% { transform: translateY(-25px) translateX(8px) scale(1.1); opacity: 0.9; }
-}
-
-@keyframes particleGlow {
-  0%, 100% { box-shadow: 0 0 5px rgba(99, 102, 241, 0.3); }
-  50% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.8), 0 0 30px rgba(99, 102, 241, 0.4); }
-}
-
-.animate-particle-float { animation: particleFloat 8s ease-in-out infinite; }
-.animate-particle-glow { animation: particleGlow 3s ease-in-out infinite; }
-
-/* Fade animations */
-.animate-fade-in-gentle {
-  animation: fadeInGentle 1s ease-out forwards;
+/* Minimal animations - only fade and gentle transitions */
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
 }
 
 .animate-fade-in-delayed {
-  animation: fadeInGentle 1s ease-out 0.5s forwards;
+  animation: fadeIn 0.6s ease-out 0.3s forwards;
   opacity: 0;
 }
 
-@keyframes fadeInGentle {
-  0% { opacity: 0; transform: translateY(20px) scale(0.95); }
-  100% { opacity: 1; transform: translateY(0) scale(1); }
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-/* Pulse animations */
-@keyframes pulseSoft {
-  0%, 100% { transform: scale(1); opacity: 0.8; }
-  50% { transform: scale(1.05); opacity: 1; }
+/* Gentle single pulse for recording indicator only */
+.animate-pulse-gentle {
+  animation: pulseGentle 2s ease-in-out infinite;
 }
 
-.animate-pulse-soft { animation: pulseSoft 3s ease-in-out infinite; }
+@keyframes pulseGentle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Handwriting animation for app name */
+.animate-handwriting {
+  animation: handwriting 0.2s ease-out forwards;
+}
+
+@keyframes handwriting {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Cursor blink */
+.animate-cursor-blink {
+  animation: cursorBlink 1s step-end infinite;
+}
+
+@keyframes cursorBlink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Light theme - Soft, natural colors */
+  --background: #f8fafb;
+  --foreground: #1e293b;
+  --accent-emerald: #059669;
+  --accent-teal: #0d9488;
+  --accent-cyan: #06b6d4;
 }
 
 @theme {
   --color-scheme: light dark;
-  --color-background: #ffffff;
-  --color-foreground: #171717;
+  --color-background: #f8fafb;
+  --color-foreground: #1e293b;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 @theme (--color-scheme: dark) {
-  --color-background: #0a0a0a;
-  --color-foreground: #ededed;
+  --color-background: #0f172a;
+  --color-foreground: #f1f5f9;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0f172a;
+    --foreground: #f1f5f9;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  line-height: 1.7;
 }

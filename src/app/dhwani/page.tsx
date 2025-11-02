@@ -47,15 +47,6 @@ const MOOD_INFO: Record<MoodState, {
 };
 
 export default function DhwaniPage() {
-  const [particles, setParticles] = useState<Array<{
-    left: string;
-    top: string;
-    animationDelay: string;
-    animationDuration: string;
-    size: string;
-    color: string;
-  }>>([]);
-  
   const [planted, setPlanted] = useState(false);
   const [autoAdapt, setAutoAdapt] = useState(true);
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -83,20 +74,6 @@ export default function DhwaniPage() {
     mood: manthanMood,
     refresh: refreshInsights,
   } = useManthanInsights();
-
-  // Generate particles only on client side
-  useEffect(() => {
-    const colors = ['bg-blue-200', 'bg-indigo-200', 'bg-purple-200', 'bg-cyan-200', 'bg-slate-200', 'bg-violet-200'];
-    const newParticles = [...Array(20)].map(() => ({
-      left: `${Math.random() * 100}%`,
-      top: `${Math.random() * 100}%`,
-      animationDelay: `${Math.random() * 8}s`,
-      animationDuration: `${6 + Math.random() * 4}s`,
-      size: `${Math.random() * 6 + 2}px`,
-      color: colors[Math.floor(Math.random() * colors.length)]
-    }));
-    setParticles(newParticles);
-  }, []);
 
   // Auto-adapt soundscape to Manthan mood
   useEffect(() => {
@@ -145,39 +122,13 @@ export default function DhwaniPage() {
 
   return (
     <RequireAuth>
-      <main className='relative flex flex-col items-center justify-center min-h-screen px-4 py-12 overflow-hidden'>
-        {/* Background */}
-        <div className='absolute inset-0 z-0 animate-gradient-flow' />
-
-        {/* Floating elements */}
-        <div className='absolute top-16 left-12 text-5xl animate-bubble-gentle opacity-30'>🌸</div>
-        <div className='absolute top-32 right-20 text-4xl animate-bubble-flow opacity-25'>🎵</div>
-        <div className='absolute bottom-40 left-16 text-6xl animate-bubble-dance opacity-20'>🌿</div>
-        <div className='absolute bottom-24 right-12 text-4xl animate-float-gentle opacity-35'>🎧</div>
-        
-        {/* Particles */}
-        <div className='absolute inset-0 z-0'>
-          {particles.map((particle, i) => (
-            <div
-              key={i}
-              className={`absolute rounded-full opacity-60 animate-particle-float ${particle.color}`}
-              style={{
-                left: particle.left,
-                top: particle.top,
-                width: particle.size,
-                height: particle.size,
-                animationDelay: particle.animationDelay,
-                animationDuration: particle.animationDuration
-              }}
-            />
-          ))}
-        </div>
+      <main className='relative flex flex-col items-center justify-center min-h-screen px-4 py-12 overflow-hidden bg-gradient-to-br from-slate-50 via-emerald-50/30 to-cyan-50/30 dark:from-slate-900 dark:via-emerald-950/30 dark:to-cyan-950/30'>
 
         {/* Main content */}
         <div className='relative z-10 w-full max-w-6xl mx-auto'>
           {/* Header */}
-          <header className='mb-12 text-center animate-fade-in-gentle'>
-            <div className='text-7xl mb-6 animate-pulse-soft'>🎵</div>
+          <header className='mb-12 text-center animate-fade-in'>
+            <div className='text-7xl mb-6'>🎵</div>
             <h1 className='text-6xl sm:text-7xl font-light mb-4 text-slate-700 dark:text-slate-200 tracking-wide'>
               Dhwani <span className='text-4xl align-super text-emerald-500'>(ध्वनि)</span>
             </h1>
@@ -203,7 +154,7 @@ export default function DhwaniPage() {
 
           {/* Manthan Insights */}
           {insights && (
-            <div className='glass-card max-w-4xl mx-auto mb-8 animate-fade-in-gentle'>
+            <div className='glass-card max-w-4xl mx-auto mb-8 animate-fade-in'>
               <div className='flex items-center justify-between mb-6'>
                 <div className='flex items-center gap-3'>
                   <div className='text-4xl'>🧠</div>
@@ -288,7 +239,7 @@ export default function DhwaniPage() {
 
           {/* No Manthan Data Notice */}
           {!insights && !insightsLoading && (
-            <div className='glass-card max-w-4xl mx-auto mb-8 animate-fade-in-gentle bg-blue-50/90 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700'>
+            <div className='glass-card max-w-4xl mx-auto mb-8 animate-fade-in bg-blue-50/90 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700'>
               <div className='flex items-start gap-4'>
                 <div className='text-4xl'>💡</div>
                 <div className='flex-1'>
@@ -332,7 +283,7 @@ export default function DhwaniPage() {
           {/* Main Soundscape Interface */}
           <div className='grid grid-cols-1 lg:grid-cols-5 gap-6'>
             {/* Visualizer */}
-            <div className='lg:col-span-3 glass-card p-0 overflow-hidden animate-float-gentle'>
+            <div className='lg:col-span-3 glass-card p-0 overflow-hidden'>
               <div style={{ height: '400px' }}>
                 <SoundVisualizer
                   analyserNode={analyserNode}
@@ -376,7 +327,7 @@ export default function DhwaniPage() {
                 <button
                   onClick={isPlaying ? pause : handlePlay}
                   disabled={!isSupported}
-                  className={`w-full py-4 rounded-2xl font-medium text-lg transition-all duration-300 ${
+                  className={`w-full py-4 rounded-2xl font-medium text-lg transition-colors ${
                     isPlaying
                       ? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-lg'
                       : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg hover:shadow-xl'
@@ -396,7 +347,7 @@ export default function DhwaniPage() {
                 </button>
 
                 {planted && (
-                  <p className='text-sm text-emerald-600 dark:text-emerald-400 mt-3 text-center font-light animate-fade-in-gentle'>
+                  <p className='text-sm text-emerald-600 dark:text-emerald-400 mt-3 text-center font-light animate-fade-in'>
                     🌿 A beautiful tree has been planted in your grove!
                   </p>
                 )}
@@ -426,7 +377,7 @@ export default function DhwaniPage() {
             {/* Controls Panel */}
             <div className='lg:col-span-2 space-y-6'>
               {/* Mode Selection */}
-              <div className='glass-card animate-fade-in-gentle'>
+              <div className='glass-card animate-fade-in'>
                 <h3 className='text-lg font-medium text-slate-700 dark:text-slate-200 mb-4'>
                   Soundscape Mode
                 </h3>
@@ -440,7 +391,7 @@ export default function DhwaniPage() {
                       <button
                         key={modeKey}
                         onClick={() => setMode(modeKey)}
-                        className={`w-full text-left p-4 rounded-xl transition-all duration-300 border-2 ${
+                        className={`w-full text-left p-4 rounded-xl transition-colors border-2 ${
                           isActive
                             ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-emerald-600 shadow-lg'
                             : isRecommended
@@ -472,13 +423,13 @@ export default function DhwaniPage() {
               </div>
 
               {/* Auto-Adapt Toggle */}
-              <div className='glass-card animate-fade-in-gentle'>
+              <div className='glass-card animate-fade-in'>
                 <label className='flex items-center justify-between cursor-pointer'>
                   <div>
                     <div className='font-medium text-slate-700 dark:text-slate-200 mb-1 flex items-center gap-2'>
                       Auto-Adapt to Mood
                       {manthanMood && autoAdapt && (
-                        <span className='px-2 py-0.5 text-xs bg-emerald-500 text-white rounded-full animate-pulse'>
+                        <span className='px-2 py-0.5 text-xs bg-emerald-500 text-white rounded-full'>
                           Active
                         </span>
                       )}
@@ -513,7 +464,7 @@ export default function DhwaniPage() {
               </div>
 
               {/* Benefits */}
-              <div className='glass-card animate-fade-in-gentle'>
+              <div className='glass-card animate-fade-in'>
                 <h3 className='text-lg font-medium text-slate-700 dark:text-slate-200 mb-3'>
                   {MODE_INFO[mode].icon} Benefits
                 </h3>
@@ -528,7 +479,7 @@ export default function DhwaniPage() {
               </div>
 
               {/* Advanced Controls */}
-              <div className='glass-card animate-fade-in-gentle'>
+              <div className='glass-card animate-fade-in'>
                 <button
                   onClick={() => setShowAdvanced(!showAdvanced)}
                   className='w-full flex items-center justify-between text-left font-medium text-slate-700 dark:text-slate-200 mb-3'
@@ -585,7 +536,7 @@ export default function DhwaniPage() {
           </div>
 
           {/* Info Section */}
-          <div className='glass-card max-w-4xl mx-auto mt-8 animate-fade-in-gentle'>
+          <div className='glass-card max-w-4xl mx-auto mt-8 animate-fade-in'>
             <div className='text-center'>
               <div className='text-4xl mb-4'>ℹ️</div>
               <h3 className='text-xl font-medium text-slate-700 dark:text-slate-200 mb-3'>

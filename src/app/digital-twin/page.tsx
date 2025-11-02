@@ -99,56 +99,112 @@ export default function DigitalTwinPage() {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (!user) return <div>Please sign in to view your Digital Twin.</div>;
+  if (loading) return <div className="flex items-center justify-center min-h-screen"><div className="w-8 h-8 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin" /></div>;
+  if (!user) return <div className="flex items-center justify-center min-h-screen text-slate-600 dark:text-slate-300">Please sign in to view your Digital Twin.</div>;
 
   return (
-    <div className="max-w-xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Emotional Digital Twin</h1>
-      {error && <div className="text-red-500 mb-2">{error}</div>}
-      <div className="mb-4">
-        <div className="text-lg">Current Mood: <span className="font-semibold">{data?.mood || "Not set"}</span></div>
-        <form onSubmit={handleMoodSubmit} className="flex gap-2 mt-2">
-          <input
-            type="text"
-            value={moodInput}
-            onChange={e => setMoodInput(e.target.value)}
-            placeholder="How are you feeling?"
-            className="border rounded px-2 py-1 flex-1"
-            disabled={saving}
-            required
-          />
-          <button type="submit" className="bg-blue-600 text-white px-4 py-1 rounded" disabled={saving}>
-            {saving ? "Saving..." : "Update"}
-          </button>
-        </form>
-      </div>
-      <div className="mb-4">
-        <h2 className="font-semibold mb-1">Mood History</h2>
-        <ul className="max-h-40 overflow-y-auto border rounded p-2 bg-white">
-          {data?.moodHistory?.length ? (
-            data.moodHistory.slice().reverse().map((entry, i) => (
-              <li key={i} className="text-sm text-gray-700">
-                <span className="font-medium">{entry.mood}</span> <span className="text-gray-400">({new Date(entry.timestamp).toLocaleString()})</span>
-              </li>
-            ))
-          ) : (
-            <li className="text-gray-400">No mood history yet.</li>
-          )}
-        </ul>
-      </div>
-      <div>
-        <div className="flex items-center gap-2 mb-1">
-          <h2 className="font-semibold">AI Insights</h2>
-          <button
-            onClick={handleAnalyzeAI}
-            className="bg-purple-600 text-white px-3 py-1 rounded text-xs disabled:opacity-60"
-            disabled={analyzing}
-          >
-            {analyzing ? "Analyzing..." : "Analyze with AI"}
-          </button>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/30 to-cyan-50/30 dark:from-slate-900 dark:via-emerald-950/30 dark:to-cyan-950/30 px-4 py-12">
+      <div className="max-w-3xl mx-auto">
+        <header className="text-center mb-12 animate-fade-in">
+          <div className="text-6xl mb-4">🧬</div>
+          <h1 className="text-5xl font-light mb-3 text-slate-700 dark:text-slate-200 tracking-wide">
+            Digital Twin <span className="text-2xl align-super text-emerald-500">(डिजिटल ट्विन)</span>
+          </h1>
+          <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
+            Your emotional mirror - track patterns, gain insights, understand yourself better
+          </p>
+        </header>
+
+        {error && (
+          <div className="glass-card bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700 mb-6 animate-fade-in">
+            <p className="text-red-700 dark:text-red-300">{error}</p>
+          </div>
+        )}
+
+        <div className="glass-card mb-6 animate-fade-in">
+          <h2 className="text-xl font-medium text-slate-700 dark:text-slate-200 mb-4 flex items-center gap-2">
+            <span className="text-2xl">💭</span>
+            Current Mood
+          </h2>
+          <div className="mb-4 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700">
+            <span className="text-2xl font-light text-emerald-700 dark:text-emerald-300">
+              {data?.mood || "Not set yet"}
+            </span>
+          </div>
+          <form onSubmit={handleMoodSubmit} className="flex gap-3">
+            <input
+              type="text"
+              value={moodInput}
+              onChange={e => setMoodInput(e.target.value)}
+              placeholder="How are you feeling right now?"
+              className="flex-1 rounded-xl border px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400/20 bg-white dark:bg-slate-700 border-slate-200 dark:border-slate-600 focus:border-emerald-400 transition-colors text-slate-700 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500"
+              disabled={saving}
+              required
+            />
+            <button 
+              type="submit" 
+              className="btn-primary px-6 disabled:opacity-60" 
+              disabled={saving}
+            >
+              {saving ? (
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                "Update"
+              )}
+            </button>
+          </form>
         </div>
-        <pre className="bg-gray-100 rounded p-2 text-xs overflow-x-auto">{JSON.stringify(data?.aiInsights, null, 2)}</pre>
+
+        <div className="glass-card mb-6 animate-fade-in">
+          <h2 className="text-xl font-medium text-slate-700 dark:text-slate-200 mb-4 flex items-center gap-2">
+            <span className="text-2xl">📊</span>
+            Mood History
+          </h2>
+          <div className="max-h-64 overflow-y-auto rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50">
+            {data?.moodHistory?.length ? (
+              <ul className="divide-y divide-slate-200 dark:divide-slate-700">
+                {data.moodHistory.slice().reverse().map((entry, i) => (
+                  <li key={i} className="px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                    <span className="font-medium text-slate-700 dark:text-slate-200">{entry.mood}</span>
+                    <span className="text-sm text-slate-500 dark:text-slate-400 ml-2">
+                      {new Date(entry.timestamp).toLocaleString()}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-slate-400 dark:text-slate-500 text-center py-8">
+                No mood history yet. Start by updating your current mood above.
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="glass-card animate-fade-in">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-medium text-slate-700 dark:text-slate-200 flex items-center gap-2">
+              <span className="text-2xl">🤖</span>
+              AI Insights
+            </h2>
+            <button
+              onClick={handleAnalyzeAI}
+              className="btn-primary disabled:opacity-60"
+              disabled={analyzing}
+            >
+              {analyzing ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Analyzing...
+                </div>
+              ) : (
+                "Analyze with AI"
+              )}
+            </button>
+          </div>
+          <pre className="bg-slate-100 dark:bg-slate-800/50 rounded-xl p-4 text-xs overflow-x-auto border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">
+            {JSON.stringify(data?.aiInsights, null, 2)}
+          </pre>
+        </div>
       </div>
     </div>
   );

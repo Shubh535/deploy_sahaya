@@ -140,10 +140,10 @@ const mapHistory = (msgs: ChatMessage[]): { role: "user" | "assistant"; text: st
 function MessageBubble({ text, fromUser, meta }: { text: string; fromUser: boolean; meta?: ChatMessage["meta"]; }) {
   return (
     <div
-      className={`max-w-[75%] px-4 py-2 rounded-2xl mb-2 text-sm shadow-md whitespace-pre-line ${
+      className={`max-w-[75%] px-4 py-2 rounded-2xl mb-2 text-sm shadow-sm whitespace-pre-line ${
         fromUser
-          ? "ml-auto bg-gradient-to-br from-blue-200 to-blue-100 text-right dark:from-blue-800 dark:to-blue-700"
-          : "mr-auto bg-gradient-to-br from-purple-100 to-pink-50 dark:from-purple-800 dark:to-pink-700"
+          ? "ml-auto message-user text-right"
+          : "mr-auto message-assistant"
       }`}
     >
       <p>{text}</p>
@@ -406,14 +406,6 @@ export default function MitraChatPage() {
   const [includeJournalContext, setIncludeJournalContext] = useState(false);
   const [error, setError] = useState("");
   const [showAnimation, setShowAnimation] = useState(true);
-  const [particles, setParticles] = useState<Array<{
-    left: string;
-    top: string;
-    animationDelay: string;
-    animationDuration: string;
-    size: string;
-    color: string;
-  }>>([]);
   const [isRecording, setIsRecording] = useState(false);
   const [recognition, setRecognition] = useState<SpeechRecognition | null>(null);
   const [emotionalIntensity, setEmotionalIntensity] = useState<number>(0);
@@ -475,20 +467,6 @@ export default function MitraChatPage() {
 
     return null;
   }, [stopVoicePipeline]);
-
-  // Generate particles only on client side to avoid hydration mismatch
-  useEffect(() => {
-    const colors = ['bg-emerald-200', 'bg-teal-200', 'bg-cyan-200', 'bg-blue-200', 'bg-indigo-200', 'bg-purple-200'];
-    const newParticles = [...Array(15)].map((_, i) => ({
-      left: `${Math.random() * 100}%`,
-      top: `${Math.random() * 100}%`,
-      animationDelay: `${Math.random() * 8}s`,
-      animationDuration: `${6 + Math.random() * 4}s`,
-      size: `${Math.random() * 6 + 2}px`,
-      color: colors[Math.floor(Math.random() * colors.length)]
-    }));
-    setParticles(newParticles);
-  }, []);
 
   useEffect(() => {
     if (loading || !user || languagesFetchedRef.current) return;
@@ -1191,42 +1169,12 @@ export default function MitraChatPage() {
       {showAnimation && (
         <ZenPortalAnimation onComplete={() => setShowAnimation(false)} />
       )}
-      <div className="relative flex flex-col h-[100dvh] overflow-hidden">
-        {/* Soothing gradient background with animation */}
-        <div className='absolute inset-0 z-0 animate-gradient-flow' />
-
-        {/* Floating nature elements */}
-        <div className='absolute top-16 left-12 text-5xl animate-bubble-gentle opacity-30'>🌸</div>
-        <div className='absolute top-32 right-20 text-4xl animate-bubble-flow opacity-25'>🧘‍♀️</div>
-        <div className='absolute bottom-40 left-16 text-6xl animate-bubble-dance opacity-20'>🌿</div>
-        <div className='absolute bottom-24 right-12 text-4xl animate-float-gentle opacity-35'>🕊️</div>
-        <div className='absolute top-1/2 left-8 text-3xl animate-drift opacity-40'>✨</div>
-        <div className='absolute top-3/4 right-16 text-5xl animate-float-slow opacity-25'>🌙</div>
-        <div className='absolute top-20 left-1/3 text-4xl animate-breathe opacity-30'>💭</div>
-        <div className='absolute bottom-32 right-1/3 text-3xl animate-float-wave opacity-35'>🌸</div>
-
-        {/* Animated particles */}
-        <div className='absolute inset-0 z-0'>
-          {particles.map((particle, i) => (
-            <div
-              key={i}
-              className={`absolute rounded-full opacity-60 animate-particle-float ${particle.color}`}
-              style={{
-                left: particle.left,
-                top: particle.top,
-                width: particle.size,
-                height: particle.size,
-                animationDelay: particle.animationDelay,
-                animationDuration: particle.animationDuration
-              }}
-            />
-          ))}
-        </div>
+      <div className="relative flex flex-col h-[100dvh] overflow-hidden bg-gradient-to-br from-slate-50 via-emerald-50/30 to-cyan-50/30 dark:from-slate-900 dark:via-emerald-950/30 dark:to-cyan-950/30">
 
         {/* Header */}
         <div className="relative z-10 flex flex-wrap items-center justify-between gap-4 px-4 py-3 shadow bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-white/20 dark:border-gray-700/50">
           <div className="font-bold text-lg text-slate-700 dark:text-slate-200 flex items-center gap-2">
-            <span className="text-3xl animate-pulse-soft">🧞‍♂️</span>
+            <span className="text-3xl">🧞‍♂️</span>
             <div>
               <span>Mitra</span>
               <span className="text-base text-slate-500 dark:text-slate-400">(मित्र)</span>
@@ -1264,7 +1212,7 @@ export default function MitraChatPage() {
 
             {/* Emotional Intensity Indicator */}
             {emotionalIntensity > 0 && (
-              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-orange-100 to-red-100 dark:from-orange-900/30 dark:to-red-900/30 border border-orange-200 dark:border-orange-700/50">
+              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-700/50">
                 <span className="text-sm font-medium text-orange-700 dark:text-orange-300">
                   Emotional Intensity: {emotionalIntensity.toFixed(1)}/10
                 </span>
@@ -1274,7 +1222,7 @@ export default function MitraChatPage() {
                       key={i}
                       className={`w-2 h-2 rounded-full ${
                         i < Math.round(emotionalIntensity / 2)
-                          ? 'bg-red-500 animate-pulse'
+                          ? 'bg-red-500'
                           : 'bg-gray-300 dark:bg-gray-600'
                       }`}
                     />
@@ -1285,12 +1233,12 @@ export default function MitraChatPage() {
 
             {/* Recording Status */}
             {(isRecording || pipelineActive) && (
-              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-red-100 to-pink-100 dark:from-red-900/30 dark:to-pink-900/30 border border-red-200 dark:border-red-700/50 animate-pulse">
+              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700/50 animate-pulse-gentle">
                 <span className="text-sm font-medium text-red-700 dark:text-red-300">🎤 Listening...</span>
                 <div className="flex gap-1">
-                  <div className="w-2 h-2 bg-red-500 rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-red-500 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                  <div className="w-2 h-2 bg-red-500 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                  <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                  <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                  <div className="w-2 h-2 bg-red-500 rounded-full"></div>
                 </div>
                 <div className="w-16 h-2 bg-white/60 dark:bg-white/10 rounded-full overflow-hidden">
                   <div
@@ -1315,7 +1263,7 @@ export default function MitraChatPage() {
             >
               {voicePlaybackEnabled ? '🔊 Auto-voice' : '🔇 Text only'}
               {voicePlaybackPending && (
-                <span className="animate-spin text-xs">🌀</span>
+                <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
               )}
             </button>
           </div>
@@ -1324,8 +1272,8 @@ export default function MitraChatPage() {
         {/* Chat Area */}
         <div className="relative z-10 flex-1 overflow-y-auto px-4 py-6">
           {messages.length === 0 && (
-            <div className="text-center text-slate-500 dark:text-slate-400 mt-16 animate-fade-in-gentle">
-              <div className="text-6xl mb-4 animate-bounce">🧞‍♂️</div>
+            <div className="text-center text-slate-500 dark:text-slate-400 mt-16 animate-fade-in">
+              <div className="text-6xl mb-4">🧞‍♂️</div>
               <p className="text-xl font-light mb-2">Your gentle AI companion awaits</p>
               <p className="text-sm font-light mb-4">Share what&apos;s in your heart - I&apos;m here to listen with compassion</p>
               {voiceSupported && (
@@ -1372,9 +1320,9 @@ export default function MitraChatPage() {
             <button
               type="button"
               onClick={isRecording ? stopVoiceRecording : startVoiceRecording}
-              className={`p-3 rounded-full transition-all duration-300 hover:scale-110 ${
+              className={`p-3 rounded-full transition-colors ${
                 isRecording
-                  ? 'bg-red-500 hover:bg-red-600 animate-pulse shadow-lg shadow-red-500/50'
+                  ? 'bg-red-500 hover:bg-red-600 animate-pulse-gentle shadow-lg shadow-red-500/50'
                   : 'bg-emerald-500 hover:bg-emerald-600 shadow-lg shadow-emerald-500/30'
               } text-white disabled:opacity-60`}
               disabled={sending || !voiceSupported}
@@ -1383,7 +1331,6 @@ export default function MitraChatPage() {
               {isRecording ? (
                 <div className="flex items-center gap-1">
                   <span className="text-lg">⏹️</span>
-                  <div className="w-2 h-2 bg-white rounded-full animate-ping"></div>
                 </div>
               ) : (
                 <span className="text-lg">🎤</span>
@@ -1397,11 +1344,11 @@ export default function MitraChatPage() {
 
           <button
             type="submit"
-            className="btn-primary disabled:opacity-60 transition-all duration-300 hover:scale-105"
+            className="btn-primary disabled:opacity-60 transition-colors"
             disabled={sending || !input.trim()}
           >
             {sending ? (
-              <div className="animate-spin text-xl">🌀</div>
+              <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
               <span className="flex items-center gap-2">
                 <span className="text-lg">✨</span>
@@ -1417,9 +1364,9 @@ export default function MitraChatPage() {
             <button
               key={m.key}
               onClick={() => setMode(m.key)}
-              className={`glass-card px-4 py-3 flex items-center gap-3 text-sm font-medium transition-all duration-300 hover:scale-105 border-2 ${
+              className={`glass-card px-4 py-3 flex items-center gap-3 text-sm font-medium transition-colors border-2 ${
                 mode === m.key
-                ? "bg-emerald-500 text-white border-emerald-600 scale-110 shadow-xl"
+                ? "bg-emerald-500 text-white border-emerald-600 shadow-lg"
                 : "bg-white/80 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 border-white/30 dark:border-slate-600/50 hover:bg-white/90 dark:hover:bg-slate-800/90"
             }`}
             style={{ minWidth: 140 }}
@@ -1432,9 +1379,9 @@ export default function MitraChatPage() {
           {/* Journal Context Toggle */}
           <button
             onClick={() => setIncludeJournalContext(!includeJournalContext)}
-            className={`glass-card px-4 py-3 flex items-center gap-3 text-sm font-medium transition-all duration-300 hover:scale-105 border-2 ${
+            className={`glass-card px-4 py-3 flex items-center gap-3 text-sm font-medium transition-colors border-2 ${
               includeJournalContext
-              ? "bg-indigo-500 text-white border-indigo-600 scale-110 shadow-xl"
+              ? "bg-indigo-500 text-white border-indigo-600 shadow-lg"
               : "bg-white/80 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 border-white/30 dark:border-slate-600/50 hover:bg-white/90 dark:hover:bg-slate-800/90"
           }`}
           style={{ minWidth: 140 }}

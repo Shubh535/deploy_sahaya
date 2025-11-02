@@ -50,30 +50,8 @@ export default function ManthanJournalPage() {
   const [generatingPrompt, setGeneratingPrompt] = useState(false);
   const [showPromptsPanel, setShowPromptsPanel] = useState(true);
   
-  const [particles, setParticles] = useState<Array<{
-    left: string;
-    top: string;
-    animationDelay: string;
-    animationDuration: string;
-    size: string;
-    color: string;
-  }>>([]);
   const entryRef = useRef<HTMLTextAreaElement>(null);
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Generate particles only on client side to avoid hydration mismatch
-  useEffect(() => {
-    const colors = ['bg-emerald-200', 'bg-teal-200', 'bg-cyan-200', 'bg-blue-200', 'bg-indigo-200', 'bg-purple-200'];
-    const newParticles = [...Array(18)].map((_, i) => ({
-      left: `${Math.random() * 100}%`,
-      top: `${Math.random() * 100}%`,
-      animationDelay: `${Math.random() * 8}s`,
-      animationDuration: `${6 + Math.random() * 4}s`,
-      size: `${Math.random() * 6 + 2}px`,
-      color: colors[Math.floor(Math.random() * colors.length)]
-    }));
-    setParticles(newParticles);
-  }, []);
 
   useEffect(() => {
     if (entryRef.current) entryRef.current.focus();
@@ -367,78 +345,44 @@ export default function ManthanJournalPage() {
   };
 
   if (loading) return (
-    <div className='relative flex flex-col items-center justify-center min-h-screen px-4 py-12 overflow-hidden'>
-      <div className='absolute inset-0 z-0 animate-gradient-flow' />
-      <div className='relative z-10 glass-card p-8 text-center animate-float-gentle'>
-        <div className='animate-spin text-4xl mb-4'>🌀</div>
-        <p className='text-slate-600 dark:text-slate-400 font-light'>Preparing your reflection space...</p>
+    <div className='flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/30 to-cyan-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900'>
+      <div className='glass-card p-8 text-center animate-fade-in'>
+        <div className='w-12 h-12 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto mb-4' />
+        <p className='text-slate-600 dark:text-slate-400'>Preparing your reflection space...</p>
       </div>
     </div>
   );
   
   if (!user) return (
-    <div className='relative flex flex-col items-center justify-center min-h-screen px-4 py-12 overflow-hidden'>
-      <div className='absolute inset-0 z-0 animate-gradient-flow' />
-      <div className='relative z-10 glass-card p-8 text-center animate-float-gentle'>
+    <div className='flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/30 to-cyan-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900'>
+      <div className='glass-card p-8 text-center animate-fade-in'>
         <div className='text-4xl mb-4'>🔐</div>
-        <p className='text-slate-600 dark:text-slate-400 font-light'>Please sign in to begin your journey of self-discovery.</p>
+        <p className='text-slate-600 dark:text-slate-400'>Please sign in to begin your journey of self-discovery.</p>
       </div>
     </div>
   );
 
   return (
-    <div className='relative min-h-screen overflow-hidden'>
-      {/* Soothing gradient background with animation */}
-      <div className='absolute inset-0 z-0 animate-gradient-flow' />
-
-      {/* Floating nature elements */}
-      <div className='absolute top-16 left-12 text-5xl animate-bubble-gentle opacity-30'>🌸</div>
-      <div className='absolute top-32 right-20 text-4xl animate-bubble-flow opacity-25'>🧠</div>
-      <div className='absolute bottom-40 left-16 text-6xl animate-bubble-dance opacity-20'>🌿</div>
-      <div className='absolute bottom-24 right-12 text-4xl animate-float-gentle opacity-35'>🕊️</div>
-      <div className='absolute top-1/2 left-8 text-3xl animate-drift opacity-40'>✨</div>
-      <div className='absolute top-3/4 right-16 text-5xl animate-float-slow opacity-25'>🌙</div>
-      <div className='absolute top-20 left-1/3 text-4xl animate-breathe opacity-30'>💭</div>
-      <div className='absolute bottom-32 right-1/3 text-3xl animate-float-wave opacity-35'>🌸</div>
-
-      {/* Animated particles */}
-      <div className='absolute inset-0 z-0'>
-        {particles.map((particle, i) => (
-          <div
-            key={i}
-            className={`absolute rounded-full opacity-60 animate-particle-float ${particle.color}`}
-            style={{
-              left: particle.left,
-              top: particle.top,
-              width: particle.size,
-              height: particle.size,
-              animationDelay: particle.animationDelay,
-              animationDuration: particle.animationDuration
-            }}
-          />
-        ))}
-      </div>
-
+    <div className='min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/30 to-cyan-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900'>
       {/* Main content */}
-      <div className='relative z-10 max-w-7xl mx-auto p-6 min-h-screen'>
+      <div className='max-w-7xl mx-auto p-6 min-h-screen'>
         {/* Header */}
-        <header className='text-center mb-8 animate-fade-in-gentle'>
-          <div className='text-6xl mb-4 animate-pulse-soft'>🧠</div>
-          <h1 className='text-4xl sm:text-5xl font-light mb-2 text-slate-700 dark:text-slate-200 tracking-wide'>
-            Manthan <span className='text-3xl align-super text-emerald-500'>(मंथन)</span>
+        <header className='text-center mb-8 animate-fade-in'>
+          <h1 className='text-4xl sm:text-5xl font-light mb-2 text-slate-800 dark:text-slate-100 tracking-wide'>
+            Manthan <span className='text-3xl align-super text-emerald-600'>(मंथन)</span>
           </h1>
-          <p className='text-lg text-slate-600 dark:text-slate-300 font-light'>AI Journal for reflection, reframing, and emotional growth</p>
+          <p className='text-lg text-slate-600 dark:text-slate-300'>AI Journal for reflection, reframing, and emotional growth</p>
         </header>
 
         <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
           {/* Left sidebar - Journal list */}
           <div className='lg:col-span-1'>
-            <div className='glass-card p-6 animate-float-gentle'>
+            <div className='glass-card p-6 animate-fade-in'>
               <div className='flex items-center justify-between mb-4'>
-                <h2 className='text-xl font-light text-slate-700 dark:text-slate-200'>My Journals</h2>
+                <h2 className='text-xl font-medium text-slate-700 dark:text-slate-200'>My Journals</h2>
                 <button
                   onClick={handleNewEntry}
-                  className='px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-medium transition-all duration-300 hover:scale-105'
+                  className='btn-primary'
                 >
                   + New
                 </button>
@@ -449,7 +393,7 @@ export default function ManthanJournalPage() {
                 <select
                   value={filterMood}
                   onChange={(e) => setFilterMood(e.target.value)}
-                  className='w-full px-3 py-2 rounded-xl border bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200 dark:border-slate-600 focus:border-emerald-400 text-sm'
+                  className='w-full px-3 py-2 rounded-xl border bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20 text-sm transition-colors'
                 >
                   <option value="">All Moods</option>
                   {MOODS.map(m => (
@@ -462,7 +406,7 @@ export default function ManthanJournalPage() {
               <div className='space-y-3 max-h-[600px] overflow-y-auto'>
                 {loadingJournals ? (
                   <div className='text-center py-8'>
-                    <div className='animate-spin text-3xl mb-2'>🌀</div>
+                    <div className='w-8 h-8 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto mb-2' />
                     <p className='text-sm text-slate-500'>Loading...</p>
                   </div>
                 ) : journals.length === 0 ? (
@@ -475,10 +419,10 @@ export default function ManthanJournalPage() {
                     <div
                       key={journal.id}
                       onClick={() => handleSelectJournal(journal)}
-                      className={`p-4 rounded-xl cursor-pointer transition-all duration-300 ${
+                      className={`p-4 rounded-xl cursor-pointer transition-colors ${
                         selectedJournal?.id === journal.id
-                          ? 'bg-emerald-100 dark:bg-emerald-900/30 border-2 border-emerald-400'
-                          : 'bg-white/50 dark:bg-slate-800/50 hover:bg-white/80 dark:hover:bg-slate-800/80 border border-slate-200 dark:border-slate-700'
+                          ? 'bg-emerald-50 dark:bg-emerald-950 border-2 border-emerald-400'
+                          : 'bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
                       }`}
                     >
                       <div className='flex items-start justify-between mb-2'>
@@ -524,10 +468,9 @@ export default function ManthanJournalPage() {
 
           {/* Main editor */}
           <div className='lg:col-span-2'>
-            <div className='glass-card mb-6 animate-float-gentle'>
+            <div className='glass-card mb-6 animate-fade-in'>
               <div className='p-6'>
                 <div className='flex items-center gap-3 mb-4'>
-                  <div className='text-3xl animate-bounce'>📝</div>
                   <input
                     type='text'
                     placeholder='Give your entry a title...'
@@ -547,10 +490,10 @@ export default function ManthanJournalPage() {
                       <button
                         key={m.value}
                         onClick={() => setMood(m.value)}
-                        className={`px-4 py-2 rounded-xl border-2 transition-all duration-300 hover:scale-110 ${
+                        className={`px-4 py-2 rounded-xl border-2 transition-colors ${
                           mood === m.value
-                            ? 'border-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 shadow-lg'
-                            : 'border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50'
+                            ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950'
+                            : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-emerald-300'
                         }`}
                       >
                         <span className='text-2xl'>{m.emoji}</span>
@@ -563,7 +506,7 @@ export default function ManthanJournalPage() {
                 {/* Content editor */}
                 <textarea
                   ref={entryRef}
-                  className='w-full min-h-[200px] rounded-2xl border px-4 py-3 text-base bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200 dark:border-slate-600 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20 transition-all duration-300 text-slate-700 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 resize-none'
+                  className='w-full min-h-[200px] rounded-xl border px-4 py-3 text-base bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20 transition-colors text-slate-700 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 resize-none'
                   placeholder="Pour out your heart... let your thoughts flow freely..."
                   value={entry}
                   onChange={e => setEntry(e.target.value)}
@@ -582,11 +525,11 @@ export default function ManthanJournalPage() {
                       onChange={e => setTagInput(e.target.value)}
                       onKeyPress={e => e.key === 'Enter' && handleAddTag()}
                       placeholder='Add a tag...'
-                      className='flex-1 px-3 py-2 rounded-xl border bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200 dark:border-slate-600 focus:border-emerald-400 text-sm'
+                      className='flex-1 px-3 py-2 rounded-xl border bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20 text-sm transition-colors'
                     />
                     <button
                       onClick={handleAddTag}
-                      className='px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-medium transition-all duration-300'
+                      className='btn-primary text-sm'
                     >
                       Add
                     </button>
@@ -595,7 +538,7 @@ export default function ManthanJournalPage() {
                     {tags.map(tag => (
                       <span
                         key={tag}
-                        className='px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 text-sm flex items-center gap-2'
+                        className='px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 text-sm flex items-center gap-2'
                       >
                         {tag}
                         <button
@@ -612,35 +555,35 @@ export default function ManthanJournalPage() {
                 {/* Action buttons */}
                 <div className='flex gap-4 mt-6'>
                   <button
-                    className='btn-primary flex-1 disabled:opacity-60 transition-all duration-300 hover:scale-105'
+                    className='btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed'
                     onClick={handleAnalyze}
                     disabled={analyzing || !entry.trim()}
                   >
                     {analyzing ? (
                       <span className='flex items-center justify-center gap-2'>
-                        <div className='animate-spin'>🌀</div>
+                        <div className='w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin' />
                         Analyzing...
                       </span>
                     ) : (
                       <span className='flex items-center justify-center gap-2'>
-                        <span className='text-lg'>🔍</span>
+                        <span>🔍</span>
                         Analyze with AI
                       </span>
                     )}
                   </button>
                   <button
-                    className='px-6 py-3 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl disabled:opacity-50 flex-1'
+                    className='btn-outline flex-1 disabled:opacity-50 disabled:cursor-not-allowed'
                     onClick={() => handleSave(false)}
                     disabled={saving || !entry.trim()}
                   >
                     {saving ? (
                       <span className='flex items-center justify-center gap-2'>
-                        <div className='animate-spin'>🌀</div>
+                        <div className='w-4 h-4 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin' />
                         Saving...
                       </span>
                     ) : (
                       <span className='flex items-center justify-center gap-2'>
-                        <span className='text-lg'>💾</span>
+                        <span>💾</span>
                         {selectedJournal ? 'Update' : 'Save'} Entry
                       </span>
                     )}
@@ -651,20 +594,20 @@ export default function ManthanJournalPage() {
 
             {/* Error message */}
             {error && (
-              <div className='glass-card mb-6 p-4 animate-fade-in-gentle bg-red-50/50 dark:bg-red-900/10 border-red-200/50 dark:border-red-700/50'>
+              <div className='glass-card mb-6 p-4 animate-fade-in bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800'>
                 <div className='flex items-center gap-3'>
                   <div className='text-2xl'>⚠️</div>
-                  <p className='text-red-600 dark:text-red-400 font-light'>{error}</p>
+                  <p className='text-red-600 dark:text-red-400'>{error}</p>
                 </div>
               </div>
             )}
 
             {/* Reflection Prompts Panel */}
-            <div className='glass-card p-6 mb-6 animate-float-gentle'>
+            <div className='glass-card p-6 mb-6 animate-fade-in'>
               <div className='flex items-center justify-between mb-4'>
                 <div className='flex items-center gap-3'>
-                  <div className='text-3xl animate-pulse-soft'>✨</div>
-                  <h3 className='text-xl font-light text-slate-700 dark:text-slate-200'>Reflection Prompts</h3>
+                  <div className='text-2xl'>✨</div>
+                  <h3 className='text-xl font-medium text-slate-700 dark:text-slate-200'>Reflection Prompts</h3>
                 </div>
                 <button
                   onClick={() => setShowPromptsPanel(!showPromptsPanel)}
@@ -684,7 +627,7 @@ export default function ManthanJournalPage() {
                     <select
                       value={selectedCategory}
                       onChange={(e) => setSelectedCategory(e.target.value)}
-                      className='w-full px-3 py-2 rounded-xl border bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200 dark:border-slate-600 focus:border-emerald-400 text-sm'
+                      className='w-full px-3 py-2 rounded-xl border bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20 text-sm transition-colors'
                       disabled={generatingPrompt}
                     >
                       {promptCategories.map(cat => (
@@ -699,16 +642,16 @@ export default function ManthanJournalPage() {
                   <button
                     onClick={handleGeneratePrompt}
                     disabled={generatingPrompt}
-                    className='w-full px-4 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white font-medium transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed'
+                    className='w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed'
                   >
                     {generatingPrompt ? (
                       <span className='flex items-center justify-center gap-2'>
-                        <div className='animate-spin'>🌀</div>
+                        <div className='w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin' />
                         Generating prompt...
                       </span>
                     ) : (
                       <span className='flex items-center justify-center gap-2'>
-                        <span className='text-lg'>✨</span>
+                        <span>✨</span>
                         Generate Reflection Prompt
                       </span>
                     )}
@@ -716,7 +659,7 @@ export default function ManthanJournalPage() {
 
                   {/* Current prompt display */}
                   {currentPrompt && (
-                    <div className='p-4 rounded-xl bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 border-2 border-purple-200 dark:border-purple-700 animate-fade-in-gentle'>
+                    <div className='p-4 rounded-xl bg-purple-50 dark:bg-purple-950 border-2 border-purple-300 dark:border-purple-700 animate-fade-in'>
                       <div className='flex items-start justify-between mb-3'>
                         <div className='flex items-center gap-2'>
                           <span className='text-2xl'>💭</span>
@@ -736,7 +679,7 @@ export default function ManthanJournalPage() {
                       </p>
                       <button
                         onClick={handleJournalFromPrompt}
-                        className='w-full px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-medium transition-all duration-300 hover:scale-105'
+                        className='w-full btn-primary'
                       >
                         📝 Journal from this Prompt
                       </button>
@@ -752,10 +695,10 @@ export default function ManthanJournalPage() {
 
             {/* AI Insights */}
             {insights && (
-              <div className='glass-card p-6 animate-fade-in-gentle space-y-4'>
+              <div className='glass-card p-6 animate-fade-in space-y-4'>
                 <div className='flex items-center gap-3 mb-4'>
-                  <div className='text-3xl animate-pulse-soft'>💡</div>
-                  <h3 className='text-xl font-light text-slate-700 dark:text-slate-200'>AI Insights</h3>
+                  <div className='text-2xl'>💡</div>
+                  <h3 className='text-xl font-medium text-slate-700 dark:text-slate-200'>AI Insights</h3>
                 </div>
                 
                 {insights.reframed_thought && (

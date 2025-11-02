@@ -84,28 +84,6 @@ export default function HealthPage() {
   const [chatResponse, setChatResponse] = useState('');
   const [chatting, setChatting] = useState(false);
   const [showActivitySuggestions, setShowActivitySuggestions] = useState(false);
-  const [particles, setParticles] = useState<Array<{
-    left: string;
-    top: string;
-    animationDelay: string;
-    animationDuration: string;
-    size: string;
-    color: string;
-  }>>([]);
-
-  // Generate particles
-  useEffect(() => {
-    const colors = ['bg-emerald-200', 'bg-teal-200', 'bg-cyan-200', 'bg-blue-200', 'bg-indigo-200', 'bg-purple-200'];
-    const newParticles = [...Array(20)].map((_, i) => ({
-      left: `${Math.random() * 100}%`,
-      top: `${Math.random() * 100}%`,
-      animationDelay: `${Math.random() * 8}s`,
-      animationDuration: `${6 + Math.random() * 4}s`,
-      size: `${Math.random() * 6 + 2}px`,
-      color: colors[Math.floor(Math.random() * colors.length)]
-    }));
-    setParticles(newParticles);
-  }, []);
 
   // Fetch health data
   useEffect(() => {
@@ -217,7 +195,7 @@ export default function HealthPage() {
       <RequireAuth>
         <main className='relative flex flex-col items-center justify-center min-h-screen px-4 py-12 overflow-hidden'>
           <div className='absolute inset-0 z-0 animate-gradient-flow' />
-          <div className='relative z-10 glass-card p-8 text-center animate-float-gentle'>
+          <div className='relative z-10 glass-card p-8 text-center '>
             <div className='animate-spin text-4xl mb-4'>🌀</div>
             <p className='text-slate-600 dark:text-slate-400 font-light'>Preparing your wellness space...</p>
           </div>
@@ -228,39 +206,13 @@ export default function HealthPage() {
 
   return (
     <RequireAuth>
-      <main className='relative flex flex-col items-center min-h-screen px-4 py-12 overflow-hidden'>
-        {/* Background */}
-        <div className='absolute inset-0 z-0 animate-gradient-flow' />
-        
-        {/* Floating elements */}
-        <div className='absolute top-16 left-12 text-5xl animate-bubble-gentle opacity-30'>🌸</div>
-        <div className='absolute top-32 right-20 text-4xl animate-bubble-flow opacity-25'>💓</div>
-        <div className='absolute bottom-40 left-16 text-6xl animate-bubble-dance opacity-20'>🌿</div>
-        <div className='absolute top-20 left-1/3 text-4xl animate-breathe opacity-30'>🌱</div>
-
-        {/* Particles */}
-        <div className='absolute inset-0 z-0'>
-          {particles.map((particle, i) => (
-            <div
-              key={i}
-              className={`absolute rounded-full opacity-60 animate-particle-float ${particle.color}`}
-              style={{
-                left: particle.left,
-                top: particle.top,
-                width: particle.size,
-                height: particle.size,
-                animationDelay: particle.animationDelay,
-                animationDuration: particle.animationDuration
-              }}
-            />
-          ))}
-        </div>
+      <main className='relative flex flex-col items-center min-h-screen px-4 py-12 overflow-hidden bg-gradient-to-br from-slate-50 via-emerald-50/30 to-cyan-50/30 dark:from-slate-900 dark:via-emerald-950/30 dark:to-cyan-950/30'>
 
         {/* Main content */}
         <div className='relative z-10 w-full max-w-6xl mx-auto'>
           {/* Header */}
-          <header className='text-center mb-12 animate-fade-in-gentle'>
-            <div className='text-7xl mb-6 animate-pulse-soft'>🧠</div>
+          <header className='text-center mb-12 animate-fade-in'>
+            <div className='text-7xl mb-6'>🧠</div>
             <h1 className='text-6xl sm:text-7xl font-light mb-4 text-slate-700 dark:text-slate-200 tracking-wide'>
               Sahay Sense
             </h1>
@@ -271,7 +223,7 @@ export default function HealthPage() {
             {/* Streak & Badges */}
             {health?.streak !== undefined && health.streak > 0 && (
               <div className='flex items-center justify-center gap-6 mt-6'>
-                <div className='glass-card px-6 py-3 inline-flex items-center gap-3 animate-bounce'>
+                <div className='glass-card px-6 py-3 inline-flex items-center gap-3 '>
                   <span className='text-3xl'>🔥</span>
                   <div>
                     <div className='text-2xl font-bold text-emerald-600 dark:text-emerald-400'>{health.streak} Days</div>
@@ -283,7 +235,7 @@ export default function HealthPage() {
                   <div className='glass-card px-6 py-3'>
                     <div className='flex gap-2'>
                       {health.badges.slice(0, 3).map((badge, i) => (
-                        <div key={i} className='text-3xl animate-bounce' title={badge.name} style={{ animationDelay: `${i * 0.1}s` }}>
+                        <div key={i} className='text-3xl ' title={badge.name} style={{ animationDelay: `${i * 0.1}s` }}>
                           {badge.icon}
                         </div>
                       ))}
@@ -296,7 +248,7 @@ export default function HealthPage() {
 
           {/* AI Insights Section */}
           {insights.length > 0 && (
-            <div className='mb-8 animate-fade-in-gentle'>
+            <div className='mb-8 animate-fade-in'>
               <h2 className='text-2xl font-light mb-4 text-slate-700 dark:text-slate-200 flex items-center gap-2'>
                 <span>💡</span> Your Wellness Insights
               </h2>
@@ -304,7 +256,7 @@ export default function HealthPage() {
                 {insights.map((insight, i) => (
                   <div 
                     key={i}
-                    className={`glass-card animate-float-gentle border-l-4 ${
+                    className={`glass-card  border-l-4 ${
                       insight.priority === 'high' ? 'border-red-400' :
                       insight.priority === 'medium' ? 'border-yellow-400' :
                       'border-blue-400'
@@ -547,7 +499,7 @@ export default function HealthPage() {
           </div>
 
           {/* Nutrition Suggestions */}
-          <div className='glass-card mb-8 animate-float-gentle'>
+          <div className='glass-card mb-8 '>
             <div className='text-center mb-6'>
               <h2 className='text-3xl font-light text-slate-700 dark:text-slate-200 mb-2'>🍎 Nutrition Buddy</h2>
               <p className='text-slate-600 dark:text-slate-400 font-light'>Get personalized meal ideas for students</p>

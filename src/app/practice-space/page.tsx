@@ -107,28 +107,6 @@ export default function PracticeSpaceEnhancedPage() {
     totalPractices: 0
   });
   const [showProgress, setShowProgress] = useState(false);
-  const [particles, setParticles] = useState<Array<{
-    left: string;
-    top: string;
-    animationDelay: string;
-    animationDuration: string;
-    size: string;
-    color: string;
-  }>>([]);
-
-  // Generate particles
-  useEffect(() => {
-    const colors = ['bg-purple-200', 'bg-pink-200', 'bg-blue-200', 'bg-indigo-200', 'bg-violet-200'];
-    const newParticles = [...Array(20)].map(() => ({
-      left: `${Math.random() * 100}%`,
-      top: `${Math.random() * 100}%`,
-      animationDelay: `${Math.random() * 8}s`,
-      animationDuration: `${6 + Math.random() * 4}s`,
-      size: `${Math.random() * 6 + 2}px`,
-      color: colors[Math.floor(Math.random() * colors.length)]
-    }));
-    setParticles(newParticles);
-  }, []);
 
   // Load user progress
   useEffect(() => {
@@ -245,39 +223,15 @@ export default function PracticeSpaceEnhancedPage() {
 
   return (
     <RequireAuth>
-      <main className='relative flex flex-col items-center justify-center min-h-screen px-4 py-12 overflow-hidden bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 dark:from-gray-900 dark:via-purple-900 dark:to-indigo-900'>
-        
-        {/* Animated background elements */}
-        <div className='absolute top-16 left-12 text-5xl animate-bounce opacity-20'>💼</div>
-        <div className='absolute top-32 right-20 text-4xl animate-pulse opacity-15'>🎤</div>
-        <div className='absolute bottom-40 left-16 text-6xl animate-float opacity-10'>🤝</div>
-        <div className='absolute bottom-24 right-12 text-4xl animate-bounce opacity-25'>💬</div>
-        
-        {/* Particles */}
-        <div className='absolute inset-0 z-0'>
-          {particles.map((particle, i) => (
-            <div
-              key={i}
-              className={`absolute rounded-full opacity-40 animate-float ${particle.color}`}
-              style={{
-                left: particle.left,
-                top: particle.top,
-                width: particle.size,
-                height: particle.size,
-                animationDelay: particle.animationDelay,
-                animationDuration: particle.animationDuration
-              }}
-            />
-          ))}
-        </div>
+      <main className='relative flex flex-col items-center justify-center min-h-screen px-4 py-12 overflow-hidden bg-gradient-to-br from-slate-50 via-emerald-50/30 to-cyan-50/30 dark:from-slate-900 dark:via-emerald-950/30 dark:to-cyan-950/30'>
 
         {/* Main content */}
         <div className='relative z-10 w-full max-w-6xl mx-auto'>
           
           {/* Header with Progress */}
-          <header className='mb-8 text-center'>
-            <div className='text-7xl mb-4 animate-pulse'>🎭</div>
-            <h1 className='text-5xl sm:text-6xl font-bold mb-3 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent'>
+          <header className='mb-8 text-center animate-fade-in'>
+            <div className='text-7xl mb-4'>🎭</div>
+            <h1 className='text-5xl sm:text-6xl font-bold mb-3 bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent'>
               Practice Space Pro
             </h1>
             <p className='text-lg text-gray-600 dark:text-gray-300 mb-6 max-w-2xl mx-auto'>
@@ -300,7 +254,7 @@ export default function PracticeSpaceEnhancedPage() {
               </div>
               <div className='w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-2'>
                 <div 
-                  className='bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full transition-all duration-500'
+                  className='bg-emerald-600 h-3 rounded-full transition-all duration-500'
                   style={{ width: `${xpProgress}%` }}
                 />
               </div>
@@ -349,7 +303,7 @@ export default function PracticeSpaceEnhancedPage() {
                       </div>
                       <div className='w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2'>
                         <div 
-                          className='bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full'
+                          className='bg-emerald-600 h-2 rounded-full'
                           style={{ width: `${(level / 10) * 100}%` }}
                         />
                       </div>
@@ -367,7 +321,7 @@ export default function PracticeSpaceEnhancedPage() {
                 <button
                   key={scenario.key}
                   onClick={() => handleScenario(scenario.key)}
-                  className='bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 text-left hover:scale-105 hover:shadow-2xl transition-all duration-300 border-2 border-transparent hover:border-purple-400'
+                  className='bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 text-left  hover:shadow-2xl transition-colors border-2 border-transparent hover:border-purple-400'
                 >
                   <div className='text-4xl mb-3'>{scenario.icon}</div>
                   <h3 className='text-xl font-bold mb-2 text-gray-800 dark:text-gray-200'>{scenario.label}</h3>
@@ -560,7 +514,7 @@ export default function PracticeSpaceEnhancedPage() {
 
                   {/* XP Gained */}
                   <div className='mt-4 text-center'>
-                    <div className='inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full font-semibold'>
+                    <div className='inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-full font-semibold'>
                       <span className='text-xl'>⭐</span>
                       <span>+{feedback.xpGained} XP Earned!</span>
                     </div>
@@ -597,7 +551,7 @@ export default function PracticeSpaceEnhancedPage() {
                   <button
                     onClick={handleSend}
                     disabled={loading || !userInput.trim()}
-                    className='px-6 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg font-semibold hover:from-purple-600 hover:to-pink-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105 shadow-lg'
+                    className='px-6 py-2 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors  shadow-lg'
                   >
                     {loading ? (
                       <span className='flex items-center gap-2'>

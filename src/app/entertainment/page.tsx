@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import RequireAuth from "../components/RequireAuth";
 
 interface Meme {
@@ -166,130 +165,82 @@ export default function EntertainmentPage() {
     }
   };
 
-  // Animated particles
-  const particles = Array.from({ length: 20 }, (_, i) => ({
-    id: i,
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    delay: Math.random() * 5,
-  }));
-
   return (
     <RequireAuth>
-      <main className="relative flex flex-col items-center justify-center min-h-screen px-4 py-12 overflow-hidden bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
-        {/* Animated Background Particles */}
-        <div className="absolute inset-0 z-0">
-          {particles.map((particle) => (
-            <motion.div
-              key={particle.id}
-              className="absolute w-3 h-3 bg-purple-300 rounded-full opacity-20"
-              style={{
-                left: `${particle.x}%`,
-                top: `${particle.y}%`,
-              }}
-              animate={{
-                y: [0, -30, 0],
-                scale: [1, 1.2, 1],
-                opacity: [0.2, 0.4, 0.2],
-              }}
-              transition={{
-                duration: 4,
-                repeat: Infinity,
-                delay: particle.delay,
-              }}
-            />
-          ))}
-        </div>
-
-        <div className="relative z-10 w-full max-w-6xl mx-auto">
-          <AnimatePresence mode="wait">
-            {!activeSection && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="text-center mb-12"
-              >
-                <div className="text-7xl mb-4">🎭</div>
-                <h1 className="text-5xl font-light mb-4 text-gray-800">
+      <main className="min-h-screen px-4 py-12 bg-gradient-to-br from-slate-50 via-emerald-50/30 to-cyan-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900">
+        <div className="w-full max-w-6xl mx-auto">
+          {!activeSection && (
+              <div className="text-center mb-12 animate-fade-in">
+                <h1 className="text-5xl font-light mb-4 text-slate-800 dark:text-slate-100">
                   Entertainment & Expression
                 </h1>
-                <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
                   Lighten your mood with joy-filled moments and soulful music
                 </p>
-              </motion.div>
+              </div>
             )}
 
             {!activeSection && (
-              <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto animate-fade-in-delayed">
                 {/* Daily Meme Hub Button */}
-                <motion.button
-                  whileHover={{ scale: 1.05, y: -5 }}
-                  whileTap={{ scale: 0.98 }}
+                <button
                   onClick={() => {
                     setActiveSection('meme');
                     fetchDailyMeme();
                   }}
-                  className="group relative p-10 bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl hover:shadow-purple-300/50 transition-all duration-300"
+                  className="group p-10 glass-card hover:border-purple-300 dark:hover:border-purple-600 transition-colors"
                 >
                   <div className="text-6xl mb-4 text-center">😂</div>
-                  <h3 className="text-2xl font-semibold mb-2 text-gray-800">
+                  <h3 className="text-2xl font-semibold mb-2 text-slate-800 dark:text-slate-100">
                     Daily Meme Hub
                   </h3>
-                  <p className="text-gray-600">
+                  <p className="text-slate-600 dark:text-slate-400">
                     Curated positive visuals to brighten your day
                   </p>
-                </motion.button>
+                </button>
 
                 {/* Indian Music Button */}
-                <motion.button
-                  whileHover={{ scale: 1.05, y: -5 }}
-                  whileTap={{ scale: 0.98 }}
+                <button
                   onClick={() => {
                     setActiveSection('music');
                     fetchMusicRecommendations();
                   }}
-                  className="group relative p-10 bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl hover:shadow-pink-300/50 transition-all duration-300"
+                  className="group p-10 glass-card hover:border-pink-300 dark:hover:border-pink-600 transition-colors"
                 >
                   <div className="text-6xl mb-4 text-center">🎵</div>
-                  <h3 className="text-2xl font-semibold mb-2 text-gray-800">
+                  <h3 className="text-2xl font-semibold mb-2 text-slate-800 dark:text-slate-100">
                     Indian Music Recommendations
                   </h3>
-                  <p className="text-gray-600">
+                  <p className="text-slate-600 dark:text-slate-400">
                     Soulful songs matched to your emotional state
                   </p>
-                </motion.button>
+                </button>
               </div>
             )}
 
             {/* Meme Section */}
             {activeSection === 'meme' && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="max-w-3xl mx-auto"
-              >
-                <div className="bg-white/90 backdrop-blur-md rounded-3xl p-8 shadow-2xl">
+              <div className="max-w-3xl mx-auto animate-fade-in">
+                <div className="glass-card p-8">
                   <button
                     onClick={() => setActiveSection(null)}
-                    className="mb-6 text-gray-600 hover:text-gray-800 flex items-center gap-2"
+                    className="mb-6 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 flex items-center gap-2 transition-colors"
                   >
                     ← Back
                   </button>
 
-                  <h2 className="text-3xl font-semibold text-gray-800 mb-6 text-center">
+                  <h2 className="text-3xl font-semibold text-slate-800 dark:text-slate-100 mb-6 text-center">
                     😂 Daily Meme Hub
                   </h2>
 
                   {loadingMeme ? (
                     <div className="text-center py-20">
-                      <div className="animate-spin text-6xl mb-4">😂</div>
-                      <p className="text-gray-600">Finding something fun for you...</p>
+                      <div className="w-12 h-12 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                      <p className="text-slate-600 dark:text-slate-400">Finding something fun for you...</p>
                     </div>
                   ) : dailyMeme ? (
                     <div>
-                      <div className="relative rounded-2xl overflow-hidden mb-6">
+                      <div className="relative rounded-xl overflow-hidden mb-6">
                         <img
                           src={dailyMeme.imageUrl}
                           alt={dailyMeme.description}
@@ -302,13 +253,13 @@ export default function EntertainmentPage() {
                           href={dailyMeme.photographerUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-sm text-gray-500 hover:text-gray-700"
+                          className="text-sm text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
                         >
                           📷 Photo by {dailyMeme.photographer}
                         </a>
                         <button
                           onClick={toggleBookmark}
-                          className="text-2xl hover:scale-110 transition-transform"
+                          className="text-2xl hover:opacity-70 transition-opacity"
                         >
                           {dailyMeme.bookmarked ? '⭐' : '☆'}
                         </button>
@@ -316,55 +267,50 @@ export default function EntertainmentPage() {
 
                       <button
                         onClick={fetchDailyMeme}
-                        className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
+                        className="w-full btn-primary"
                       >
                         Show Me Another 🎲
                       </button>
                     </div>
                   ) : (
                     <div className="text-center py-20">
-                      <p className="text-gray-600">Click the button above to load a meme!</p>
+                      <p className="text-slate-600 dark:text-slate-400">Click the button above to load a meme!</p>
                     </div>
                   )}
                 </div>
-              </motion.div>
+              </div>
             )}
 
             {/* Music Section */}
             {activeSection === 'music' && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="max-w-4xl mx-auto"
-              >
-                <div className="bg-white/90 backdrop-blur-md rounded-3xl p-8 shadow-2xl">
+              <div className="max-w-4xl mx-auto animate-fade-in">
+                <div className="glass-card p-8">
                   <button
                     onClick={() => setActiveSection(null)}
-                    className="mb-6 text-gray-600 hover:text-gray-800 flex items-center gap-2"
+                    className="mb-6 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 flex items-center gap-2 transition-colors"
                   >
                     ← Back
                   </button>
 
-                  <h2 className="text-3xl font-semibold text-gray-800 mb-6 text-center">
+                  <h2 className="text-3xl font-semibold text-slate-800 dark:text-slate-100 mb-6 text-center">
                     🎵 Indian Music Recommendations
                   </h2>
 
                   {loadingMusic ? (
                     <div className="text-center py-20">
-                      <div className="animate-bounce text-6xl mb-4">🎵</div>
-                      <p className="text-gray-600">Curating music for your mood...</p>
+                      <div className="w-12 h-12 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                      <p className="text-slate-600 dark:text-slate-400">Curating music for your mood...</p>
                     </div>
                   ) : musicRecs && musicRecs.songs ? (
                     <div>
-                      <div className="bg-purple-50 rounded-xl p-4 mb-6 text-center">
-                        <p className="text-sm text-gray-600">You're feeling:</p>
-                        <p className="text-xl font-semibold text-purple-600">{musicRecs.emotion}</p>
+                      <div className="bg-purple-50 dark:bg-purple-950 rounded-xl p-4 mb-6 text-center">
+                        <p className="text-sm text-slate-600 dark:text-slate-400">You're feeling:</p>
+                        <p className="text-xl font-semibold text-purple-600 dark:text-purple-400">{musicRecs.emotion}</p>
                       </div>
 
                       {musicRecs.reasoning && (
-                        <div className="bg-pink-50 rounded-xl p-4 mb-6">
-                          <p className="text-sm text-gray-700 italic">"{musicRecs.reasoning}"</p>
+                        <div className="bg-pink-50 dark:bg-pink-950 rounded-xl p-4 mb-6">
+                          <p className="text-sm text-slate-700 dark:text-slate-300 italic">"{musicRecs.reasoning}"</p>
                         </div>
                       )}
 
@@ -372,15 +318,15 @@ export default function EntertainmentPage() {
                         {musicRecs.songs.map((song, index) => (
                           <div
                             key={index}
-                            className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 hover:shadow-lg transition-all"
+                            className="message-user p-4"
                           >
                             <div className="flex items-center justify-between">
                               <div className="flex-1">
-                                <h4 className="font-semibold text-gray-800 text-lg">
+                                <h4 className="font-semibold text-slate-800 dark:text-slate-100 text-lg">
                                   {index + 1}. {song.title}
                                 </h4>
-                                <p className="text-gray-600">{song.artist}</p>
-                                <span className="inline-block mt-1 px-2 py-1 bg-white/60 rounded-full text-xs text-purple-700">
+                                <p className="text-slate-600 dark:text-slate-400">{song.artist}</p>
+                                <span className="inline-block mt-1 px-2 py-1 bg-emerald-100 dark:bg-emerald-950 rounded-full text-xs text-emerald-700 dark:text-emerald-300">
                                   {song.genre}
                                 </span>
                               </div>
@@ -409,20 +355,19 @@ export default function EntertainmentPage() {
 
                       <button
                         onClick={fetchMusicRecommendations}
-                        className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
+                        className="w-full btn-primary"
                       >
                         Refresh Recommendations 🔄
                       </button>
                     </div>
                   ) : (
                     <div className="text-center py-20">
-                      <p className="text-gray-600">Loading music recommendations...</p>
+                      <p className="text-slate-600 dark:text-slate-400">Loading music recommendations...</p>
                     </div>
                   )}
                 </div>
-              </motion.div>
+              </div>
             )}
-          </AnimatePresence>
         </div>
       </main>
     </RequireAuth>

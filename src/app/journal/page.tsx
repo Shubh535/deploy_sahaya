@@ -118,7 +118,7 @@ export default function JournalPage() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-indigo-900">
         <div className="relative z-10 pt-8 pb-4">
           <div className="max-w-6xl mx-auto px-4 text-center">
-            <div className="text-6xl mb-4 animate-bounce">🪷</div>
+            <div className="text-6xl mb-4">🪷</div>
             <h1 className="text-4xl md:text-5xl font-light text-slate-800 dark:text-slate-200 mb-2">
               Self-Introspection Journal
             </h1>

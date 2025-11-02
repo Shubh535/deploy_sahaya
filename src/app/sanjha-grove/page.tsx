@@ -183,42 +183,42 @@ export default function SanjhaGrovePage() {
                     ))}
                   </div>
 
-                  <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
-                    <div className='lg:col-span-1 space-y-4'>
-                      <div className='glass-card p-6 text-center hover:scale-105 transition-transform duration-300 cursor-pointer group'>
-                        <div className='text-5xl mb-3 group-hover:scale-110 transition-transform'>🌳</div>
-                        <div className='text-4xl font-bold text-slate-800 dark:text-white mb-2'>{analytics.overview.totalTrees}</div>
-                        <div className='text-xs uppercase tracking-wider text-slate-600 dark:text-white/70 font-medium'>Total Trees</div>
+                  <div className='grid grid-cols-1 lg:grid-cols-3 gap-4'>
+                    <div className='lg:col-span-1 space-y-3'>
+                      <div className='glass-card p-4 text-center hover:scale-105 transition-transform duration-300 cursor-pointer group'>
+                        <div className='text-3xl mb-2 group-hover:scale-110 transition-transform'>🌳</div>
+                        <div className='text-2xl font-bold text-slate-800 dark:text-white mb-1'>{analytics.overview.totalTrees}</div>
+                        <div className='text-[10px] uppercase tracking-wider text-slate-600 dark:text-white/70 font-medium'>Total Trees</div>
                       </div>
 
-                      <div className='glass-card p-6 text-center hover:scale-105 transition-transform duration-300 cursor-pointer group'>
-                        <div className='text-5xl mb-3 group-hover:scale-110 transition-transform'>🔥</div>
-                        <div className='text-4xl font-bold text-slate-800 dark:text-white mb-2'>{analytics.overview.currentStreak}</div>
-                        <div className='text-xs uppercase tracking-wider text-slate-600 dark:text-white/70 font-medium'>Day Streak</div>
+                      <div className='glass-card p-4 text-center hover:scale-105 transition-transform duration-300 cursor-pointer group'>
+                        <div className='text-3xl mb-2 group-hover:scale-110 transition-transform'>🔥</div>
+                        <div className='text-2xl font-bold text-slate-800 dark:text-white mb-1'>{analytics.overview.currentStreak}</div>
+                        <div className='text-[10px] uppercase tracking-wider text-slate-600 dark:text-white/70 font-medium'>Day Streak</div>
                       </div>
 
-                      <div className='glass-card p-6 text-center hover:scale-105 transition-transform duration-300 cursor-pointer group'>
-                        <div className='text-5xl mb-3 group-hover:scale-110 transition-transform'>📅</div>
-                        <div className='text-4xl font-bold text-slate-800 dark:text-white mb-2'>{analytics.overview.activeDaysThisMonth}</div>
-                        <div className='text-xs uppercase tracking-wider text-slate-600 dark:text-white/70 font-medium'>Active Days</div>
+                      <div className='glass-card p-4 text-center hover:scale-105 transition-transform duration-300 cursor-pointer group'>
+                        <div className='text-3xl mb-2 group-hover:scale-110 transition-transform'>📅</div>
+                        <div className='text-2xl font-bold text-slate-800 dark:text-white mb-1'>{analytics.overview.activeDaysThisMonth}</div>
+                        <div className='text-[10px] uppercase tracking-wider text-slate-600 dark:text-white/70 font-medium'>Active Days</div>
                       </div>
 
-                      <div className='glass-card p-6 text-center hover:scale-105 transition-transform duration-300 cursor-pointer group'>
-                        <div className='text-5xl mb-3 group-hover:scale-110 transition-transform'>
+                      <div className='glass-card p-4 text-center hover:scale-105 transition-transform duration-300 cursor-pointer group'>
+                        <div className='text-3xl mb-2 group-hover:scale-110 transition-transform'>
                           {moodEmojis[analytics.overview.dominantMood] || '💭'}
                         </div>
-                        <div className='text-2xl font-bold text-slate-800 dark:text-white mb-2 capitalize'>
+                        <div className='text-lg font-bold text-slate-800 dark:text-white mb-1 capitalize'>
                           {analytics.overview.dominantMood}
                         </div>
-                        <div className='text-xs uppercase tracking-wider text-slate-600 dark:text-white/70 font-medium'>Dominant Mood</div>
+                        <div className='text-[10px] uppercase tracking-wider text-slate-600 dark:text-white/70 font-medium'>Dominant Mood</div>
                       </div>
                     </div>
 
                     <div className='lg:col-span-2 space-y-4'>
-                      <div className='glass-card p-8 hover:shadow-2xl transition-shadow duration-300 h-[400px]'>
-                        <div className='flex items-center justify-between mb-6'>
-                          <h3 className='text-2xl font-light text-slate-800 dark:text-white flex items-center gap-3'>
-                            <span className='text-3xl'>📈</span>
+                      <div className='glass-card p-6 hover:shadow-2xl transition-shadow duration-300 h-[350px]'>
+                        <div className='flex items-center justify-between mb-4'>
+                          <h3 className='text-xl font-light text-slate-800 dark:text-white flex items-center gap-2'>
+                            <span className='text-2xl'>📈</span>
                             <span>Mood Timeline</span>
                           </h3>
                         </div>
@@ -260,10 +260,10 @@ export default function SanjhaGrovePage() {
                         </ResponsiveContainer>
                       </div>
 
-                      <div className='glass-card p-8 hover:shadow-2xl transition-shadow duration-300 h-[400px]'>
-                        <div className='flex items-center justify-between mb-6'>
-                          <h3 className='text-2xl font-light text-slate-800 dark:text-white flex items-center gap-3'>
-                            <span className='text-3xl'>🎨</span>
+                      <div className='glass-card p-6 hover:shadow-2xl transition-shadow duration-300 h-[350px]'>
+                        <div className='flex items-center justify-between mb-4'>
+                          <h3 className='text-xl font-light text-slate-800 dark:text-white flex items-center gap-2'>
+                            <span className='text-2xl'>🎨</span>
                             <span>Mood Distribution</span>
                           </h3>
                         </div>
