@@ -36,6 +36,15 @@ router.use('/health', require('./routes/health'));
 
 router.use('/dhwani', require('./routes/dhwani'));
 
+console.log('Loading entertainment route...');
+try {
+  const entertainmentRouter = require('./routes/entertainment');
+  router.use('/entertainment', entertainmentRouter);
+  console.log('Entertainment route loaded successfully');
+} catch (error) {
+  console.error('Error loading entertainment route:', error);
+}
+
 // Test route
 router.post('/soundscape-test', (req, res) => {
   console.log('Soundscape test route hit!');
